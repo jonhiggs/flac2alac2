@@ -110,8 +110,8 @@ function _convert_flac2alac {
 		exit 1
 	else
 		mv "${D}/.tmp.${NF}" "${D}/${NF}"
-		OLDSIZE="`du -sb \"$1\" | awk '{print $1}'`" 	
-		NEWSIZE="`du -sb \"${D}/${NF}\" | awk '{print $1}'`" 	
+		OLDSIZE=`stat -f "%z" "$1"`
+		NEWSIZE=`stat -f "%z" "${D}/${NF}"`
 		PCT=$(( $OLDSIZE * 100 / $NEWSIZE ))
 		echo "Successfully converted:"
 		echo "$1 -> ${D}/$NF"
