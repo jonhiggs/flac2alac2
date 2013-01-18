@@ -119,7 +119,6 @@ function _convert_flac2alac {
 		if [ $DELETE_WHEN_DONE -gt 0 ]; then
 			rm -v "$1"
 		fi	
-		exit 0
 	fi
 }
 
@@ -139,3 +138,4 @@ for filename in "$@"; do
 	fi
 done
 
+exit 0
