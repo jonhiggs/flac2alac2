@@ -43,6 +43,13 @@ function _convert_flac2alac {
 	COMPOSER="`metaflac --show-tag=COMPOSER \"$1\" | sed s/COMPOSER=//ig`"
 	ARTFORMAT="`metaflac --export-picture-to=- \"$1\" | file -i -b - | awk '{split(\$1,arr,\";\"); print arr[1]}'`"
 	ARTFILE=".arttmp.${NF}"
+  ART_EXISTS="`metaflac --export-picture-to=- \"$1\" && echo 'true' || echo 'false'`"
+  if $ART_EXISTS; then
+    ARTFORMAT="`metaflac --export-picture-to=- \"$1\" | file -i -b - | awk '{split(\$1,arr,\";\"); print arr[1]}'`"
+    ARTFILE=".arttmp.${NF}"
+  else
+    ARTFORMAT="application/x-empty"
+  fi
 
 	if [ "$ARTFORMAT" != "application/x-empty" ]; then
 		metaflac --export-picture-to="${D}/${ARTFILE}" "$1"
