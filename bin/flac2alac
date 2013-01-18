@@ -99,14 +99,11 @@ function _convert_flac2alac {
 		echo "ERROR: unable to decode new ALAC, exiting." > /dev/stderr
 		exit 1
 	fi
-	ORIG="`md5sum \"${D}/.flacdecode.${NF}.wav\" | awk '{print $1}'`"	
-	NEW="`md5sum \"${D}/.alacdecode.${NF}.wav\" | awk '{print $1}'`"	
-	rm -f "${D}/.alacdecode.${NF}.wav"
-	rm -f "${D}/.flacdecode.${NF}.wav"
-	if [ "$ORIG" != "$NEW" ]; then
+	if ! diff "${D}/.flacdecode.${NF}.wav" ${D}/.alacdecode.${NF}.wav; then
 		echo "ERROR: Newly converted ALAC is not identical!" > /dev/stderr
 		echo "Aborting!" > /dev/stderr
 		rm -f "${D}/.tmp.${NF}"
+		rm -f "${D}/.*decode.${NF}.wav"
 		exit 1
 	else
 		mv "${D}/.tmp.${NF}" "${D}/${NF}"
@@ -120,6 +117,8 @@ function _convert_flac2alac {
 			rm -v "$1"
 		fi	
 	fi
+
+	rm -f "${D}/.*decode.${NF}.wav"
 }
 
 if [ $# -lt 1 ]; then
