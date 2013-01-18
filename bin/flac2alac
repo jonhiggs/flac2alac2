@@ -16,6 +16,8 @@
 # mp4tags does not require a png cover file as the manpage says
 # also iTunes 10.x will accept either embedded png or jpeg in an alac m4a
 
+SED=`which gsed || which sed`
+
 function _convert_flac2alac {
 	
 	NF="`basename \"$1\" .flac`.m4a"
@@ -29,20 +31,18 @@ function _convert_flac2alac {
 		exit 1
 	fi
 
-	ARTIST="`metaflac --show-tag=ARTIST \"$1\" | sed s/ARTIST=//ig`"
-	ALBUMARTIST="`metaflac --show-tag=ALBUMARTIST \"$1\" | sed s/ALBUMARTIST=//ig`"
-	TITLE="`metaflac --show-tag=TITLE \"$1\" | sed s/TITLE=//ig`"
-	ALBUM="`metaflac --show-tag=ALBUM \"$1\" | sed s/ALBUM=//ig`"
-	DATE="`metaflac --show-tag=DATE \"$1\" | sed s/DATE=//ig`"
-	GENRE="`metaflac --show-tag=GENRE \"$1\" | sed s/GENRE=//ig`"
-	TRACKNUMBER="`metaflac --show-tag=TRACKNUMBER \"$1\" | sed s/TRACKNUMBER=//ig`"
-	TRACKTOTAL="`metaflac --show-tag=TRACKTOTAL \"$1\" | sed s/TRACKTOTAL=//ig`"
-	DISCNUMBER="`metaflac --show-tag=DISCNUMBER \"$1\" | sed s/DISCNUMBER=//ig`"
-	DISCTOTAL="`metaflac --show-tag=DISCTOTAL \"$1\" | sed s/DISCTOTAL=//ig`"
-	DESCRIPTION="`metaflac --show-tag=DESCRIPTION \"$1\" | sed s/DESCRIPTION=//ig`"
-	COMPOSER="`metaflac --show-tag=COMPOSER \"$1\" | sed s/COMPOSER=//ig`"
-	ARTFORMAT="`metaflac --export-picture-to=- \"$1\" | file -i -b - | awk '{split(\$1,arr,\";\"); print arr[1]}'`"
-	ARTFILE=".arttmp.${NF}"
+	ARTIST="`metaflac --show-tag=ARTIST \"$1\" | $SED s/ARTIST=//ig`"
+	ALBUMARTIST="`metaflac --show-tag=ALBUMARTIST \"$1\" | $SED s/ALBUMARTIST=//ig`"
+	TITLE="`metaflac --show-tag=TITLE \"$1\" | $SED s/TITLE=//ig`"
+	ALBUM="`metaflac --show-tag=ALBUM \"$1\" | $SED s/ALBUM=//ig`"
+	DATE="`metaflac --show-tag=DATE \"$1\" | $SED s/DATE=//ig`"
+	GENRE="`metaflac --show-tag=GENRE \"$1\" | $SED s/GENRE=//ig`"
+	TRACKNUMBER="`metaflac --show-tag=TRACKNUMBER \"$1\" | $SED s/TRACKNUMBER=//ig`"
+	TRACKTOTAL="`metaflac --show-tag=TRACKTOTAL \"$1\" | $SED s/TRACKTOTAL=//ig`"
+	DISCNUMBER="`metaflac --show-tag=DISCNUMBER \"$1\" | $SED s/DISCNUMBER=//ig`"
+	DISCTOTAL="`metaflac --show-tag=DISCTOTAL \"$1\" | $SED s/DISCTOTAL=//ig`"
+	DESCRIPTION="`metaflac --show-tag=DESCRIPTION \"$1\" | $SED s/DESCRIPTION=//ig`"
+	COMPOSER="`metaflac --show-tag=COMPOSER \"$1\" | $SED s/COMPOSER=//ig`"
   ART_EXISTS="`metaflac --export-picture-to=- \"$1\" && echo 'true' || echo 'false'`"
   if $ART_EXISTS; then
     ARTFORMAT="`metaflac --export-picture-to=- \"$1\" | file -i -b - | awk '{split(\$1,arr,\";\"); print arr[1]}'`"
