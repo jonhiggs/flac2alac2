@@ -88,7 +88,7 @@ function _convert_flac2alac {
 	mp4tags -a "$ARTIST" "${D}/.tmp.${NF}"
 	mp4tags -R "$ALBUMARTIST" "${D}/.tmp.${NF}"
 	mp4tags -A "$ALBUM" "${D}/.tmp.${NF}"
-	mp4tags -g "$GENRE" "${D}/.tmp.${NF}" 
+	mp4tags -g "$GENRE" "${D}/.tmp.${NF}"
 	mp4tags -y "$DATE"  "${D}/.tmp.${NF}"
 
 	ffmpeg -i "${D}/.tmp.${NF}" "${D}/.alacdecode.${NF}.wav"
