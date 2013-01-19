@@ -23,7 +23,7 @@ function _convert_flac2alac {
 	NF="`basename \"$1\" .flac`.m4a"
 	D="`dirname \"$1\"`"
 
-	flac -dc "$1" > "${D}/.flacdecode.${NF}.wav"
+	flac -d -o "${D}/.flacdecode.${NF}.wav" "$1"
 
 	if [ $? -ne 0 ]; then
 		rm -f "${D}/.flacdecode.${NF}.wav"
