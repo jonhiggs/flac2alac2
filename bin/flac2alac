@@ -63,7 +63,11 @@ function _convert_flac2alac {
   fi
   rm -f "${TMP_ARTFILE}"
 
-	ffmpeg -v -1 -i "$1" -acodec alac "${D}/.tmp.${NF}" 
+  if which afconvert; then
+    afconvert -d alac "${D}/.flacdecode.${NF}.wav" "${D}/.tmp.${NF}"
+  else
+    ffmpeg -v -1 -i "$1" -acodec alac "${D}/.tmp.${NF}"
+  fi
 
 	if [ $? -ne 0 ]; then
 		echo "Problem running conversion, exiting." > /dev/stderr
