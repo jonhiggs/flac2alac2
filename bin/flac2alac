@@ -43,33 +43,41 @@ function _convert_flac2alac {
 	DISCTOTAL="`metaflac --show-tag=DISCTOTAL \"$1\" | $SED s/DISCTOTAL=//ig`"
 	DESCRIPTION="`metaflac --show-tag=DESCRIPTION \"$1\" | $SED s/DESCRIPTION=//ig`"
 	COMPOSER="`metaflac --show-tag=COMPOSER \"$1\" | $SED s/COMPOSER=//ig`"
-  ART_EXISTS="`metaflac --export-picture-to=- \"$1\" && echo 'true' || echo 'false'`"
-  if $ART_EXISTS; then
-    ARTFORMAT="`metaflac --export-picture-to=- \"$1\" | file -i -b - | awk '{split(\$1,arr,\";\"); print arr[1]}'`"
-    ARTFILE=".arttmp.${NF}"
+
+  ARTFILE="${D}/.folder.png"
+  TMP_ARTFILE="${D}/.folder.image"
+
+  if [ -f "${D}/folder.jpg" ]; then
+    cp "${D}/folder.jpg" "${TMP_ARTFILE}"
   else
-    ARTFORMAT="application/x-empty"
+    metaflac --export-picture-to="${TMP_ARTFILE}" "$1"
   fi
 
-	if [ "$ARTFORMAT" != "application/x-empty" ]; then
-		metaflac --export-picture-to="${D}/${ARTFILE}" "$1"
-		if [ "$ARTFORMAT" = "image/png" ]; then ARTEXT="png"; fi
-		if [ "$ARTFORMAT" = "image/jpeg" ]; then ARTEXT="jpg"; fi
-		if [ -z "$ARTEXT" ]; then
-			echo "unknown embedded album art format ${ARTFORMAT}, cannot continue." > /dev/stderr
-			exit 1;
-		fi
-	fi
+  if [ -f ${TMP_ARTFILE} ]; then
+    convert "${TMP_ARTFILE}" "${ARTFILE}"
+    if [ $? -ne 0 ]; then
+      echo "Art is in an unworkable format, cannot continue." > /dev/stderr
+      exit 1
+    fi
+
+  fi
+  rm -f "${TMP_ARTFILE}"
 
 	ffmpeg -v -1 -i "$1" -acodec alac "${D}/.tmp.${NF}" 
 
 	if [ $? -ne 0 ]; then
 		echo "Problem running conversion, exiting." > /dev/stderr
 		rm -f "${D}/.flacdecode.${NF}.wav"
-		rm -f "${D}/.tmp.${NF}" "${D}/${ARTFILE}"
+		rm -f "${D}/.tmp.${NF}" "${ARTFILE}"
 		exit 1
 	fi
 
+	if [ -f $ARTFILE ]; then
+		# this embeds a png or jpeg cover into the m4a if it was
+		# found in the original flac file
+		mp4tags -P "$ARTFILE" "${D}/.tmp.${NF}"
+		rm -f "${ARTFILE}"
+	fi
 	mp4tags -s "$TITLE" "${D}/.tmp.${NF}"
 	mp4tags -t "$TRACKNUMBER" "${D}/.tmp.${NF}"
 	mp4tags -T "$TRACKTOTAL" "${D}/.tmp.${NF}"
@@ -82,14 +90,6 @@ function _convert_flac2alac {
 	mp4tags -A "$ALBUM" "${D}/.tmp.${NF}"
 	mp4tags -g "$GENRE" "${D}/.tmp.${NF}" 
 	mp4tags -y "$DATE"  "${D}/.tmp.${NF}"
-
-	if [ -f "${D}/$ARTFILE" ]; then
-		# this embeds a png or jpeg cover into the m4a if it was
-		# found in the original flac file
-		mp4tags -P "${D}/$ARTFILE" "${D}/.tmp.${NF}"
-		rm -f "${D}/${ARTFILE}"	
-	fi
-
 
 	ffmpeg -i "${D}/.tmp.${NF}" "${D}/.alacdecode.${NF}.wav"
 	if [ $? -ne 0 ]; then
