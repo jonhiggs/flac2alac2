@@ -95,34 +95,25 @@ function _convert_flac2alac {
 	mp4tags -g "$GENRE" "${D}/.tmp.${NF}"
 	mp4tags -y "$DATE"  "${D}/.tmp.${NF}"
 
-	ffmpeg -i "${D}/.tmp.${NF}" "${D}/.alacdecode.${NF}.wav"
 	if [ $? -ne 0 ]; then
 		rm -f "${D}/.flacdecode.${NF}.wav"
-		rm -f "${D}/.alacdecode.${NF}.wav"
 		rm -f "${D}/${NF}"
 		echo "ERROR: unable to decode new ALAC, exiting." > /dev/stderr
 		exit 1
 	fi
-	if ! diff "${D}/.flacdecode.${NF}.wav" ${D}/.alacdecode.${NF}.wav; then
-		echo "ERROR: Newly converted ALAC is not identical!" > /dev/stderr
-		echo "Aborting!" > /dev/stderr
-		rm -f "${D}/.tmp.${NF}"
-		rm -f "${D}/.*decode.${NF}.wav"
-		exit 1
-	else
-		mv "${D}/.tmp.${NF}" "${D}/${NF}"
-		OLDSIZE=`stat -f "%z" "$1"`
-		NEWSIZE=`stat -f "%z" "${D}/${NF}"`
-		PCT=$(( $OLDSIZE * 100 / $NEWSIZE ))
-		echo "Successfully converted:"
-		echo "$1 -> ${D}/$NF"
-		echo "STATS: ALAC is ${PCT}% the size of the input FLAC" 
-		if [ $DELETE_WHEN_DONE -gt 0 ]; then
-			rm -v "$1"
-		fi	
-	fi
 
-	rm -f "${D}/.*decode.${NF}.wav"
+  mv "${D}/.tmp.${NF}" "${D}/${NF}"
+  OLDSIZE=`stat -f "%z" "$1"`
+  NEWSIZE=`stat -f "%z" "${D}/${NF}"`
+  PCT=$(( $OLDSIZE * 100 / $NEWSIZE ))
+  echo "Successfully converted:"
+  echo "$1 -> ${D}/$NF"
+  echo "STATS: ALAC is ${PCT}% the size of the input FLAC"
+  if [ $DELETE_WHEN_DONE -gt 0 ]; then
+    rm -v "$1"
+  fi
+
+	rm -f "${D}/.flacdecode.${NF}.wav"
 }
 
 if [ $# -lt 1 ]; then
