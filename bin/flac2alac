@@ -25,8 +25,6 @@ function _convert_flac2alac {
 	OUTFILE="`basename \"$1\" .flac`.m4a"
 	DIR="`dirname \"$1\"`"
 
-  _test_flac "$NF"
-
 	flac -d -o "${DIR}/.flacdecode.${OUTFILE}.wav" "$1"
 
 	if [ $? -ne 0 ]; then
@@ -126,8 +124,8 @@ function _convert_flac2alac {
 
 function _test_flac() {
   if ! flac --test $1 &> /dev/null; then
-    echo "ERROR: Input file is corrupt." > /dev/stderr
-    exit 1
+    echo "ERROR: Input file '$1' is corrupt." > /dev/stderr
+    return 1
   fi
   return 0
 }
@@ -141,7 +139,9 @@ DELETE_WHEN_DONE=0
 
 for filename in "$@"; do
 	[ "$filename" == "-d" ] && DELETE_WHEN_DONE=1
-	[ -f "$filename" ] &&  _convert_flac2alac "$filename"
+	if [ -f "$filename" ]; then
+    _test_flac "$filename" && _convert_flac2alac "$filename"
+  fi
 done
 
 exit 0
