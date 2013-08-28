@@ -19,10 +19,14 @@
 SED=`which gsed || which sed`
 
 function _convert_flac2alac {
-  _test_flac "$1"
 	
+  # gaa, i don't like abbreviations.
+  # D is the working directory.
+  # NF is the audio file. No idea why those letters were choosen.
 	NF="`basename \"$1\" .flac`.m4a"
 	D="`dirname \"$1\"`"
+
+  _test_flac "$NF"
 
 	flac -d -o "${D}/.flacdecode.${NF}.wav" "$1"
 
