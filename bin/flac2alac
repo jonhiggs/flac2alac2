@@ -23,14 +23,14 @@ function _convert_flac2alac {
   # gaa, i don't like abbreviations.
   # D is the working directory.
 	OUTFILE="`basename \"$1\" .flac`.m4a"
-	D="`dirname \"$1\"`"
+	DIR="`dirname \"$1\"`"
 
   _test_flac "$NF"
 
-	flac -d -o "${D}/.flacdecode.${OUTFILE}.wav" "$1"
+	flac -d -o "${DIR}/.flacdecode.${OUTFILE}.wav" "$1"
 
 	if [ $? -ne 0 ]; then
-		rm -f "${D}/.flacdecode.${OUTFILE}.wav"
+		rm -f "${DIR}/.flacdecode.${OUTFILE}.wav"
 		echo "ERROR: corrupt or invalid flac file, exiting." > /dev/stderr
 		exit 1
 	fi
@@ -48,11 +48,13 @@ function _convert_flac2alac {
 	DESCRIPTION="`metaflac --show-tag=DESCRIPTION \"$1\" | $SED s/DESCRIPTION=//ig`"
 	COMPOSER="`metaflac --show-tag=COMPOSER \"$1\" | $SED s/COMPOSER=//ig`"
 
-  ARTFILE="${D}/.folder.png"
-  TMP_ARTFILE="${D}/.folder.image"
+  # TODO: Start of cover processing...
+  # move this to a seperate function.
+  ARTFILE="${DIR}/.folder.png"
+  TMP_ARTFILE="${DIR}/.folder.image"
 
-  if [ -f "${D}/folder.jpg" ]; then
-    cp "${D}/folder.jpg" "${TMP_ARTFILE}"
+  if [ -f "${DIR}/folder.jpg" ]; then
+    cp "${DIR}/folder.jpg" "${TMP_ARTFILE}"
   else
     metaflac --export-picture-to="${TMP_ARTFILE}" "$1"
   fi
@@ -69,57 +71,57 @@ function _convert_flac2alac {
   # ------------------------------------------
 
   if which afconvert; then
-    afconvert -d alac "${D}/.flacdecode.${OUTFILE}.wav" "${D}/.tmp.${OUTFILE}"
+    afconvert -d alac "${DIR}/.flacdecode.${OUTFILE}.wav" "${DIR}/.tmp.${OUTFILE}"
   else
-    ffmpeg -v -1 -i "$1" -acodec alac "${D}/.tmp.${OUTFILE}"
+    ffmpeg -v -1 -i "$1" -acodec alac "${DIR}/.tmp.${OUTFILE}"
   fi
 
 	if [ $? -ne 0 ]; then
 		echo "Problem running conversion, exiting." > /dev/stderr
-		rm -f "${D}/.flacdecode.${OUTFILE}.wav"
-		rm -f "${D}/.tmp.${OUTFILE}" "${ARTFILE}"
+		rm -f "${DIR}/.flacdecode.${OUTFILE}.wav"
+		rm -f "${DIR}/.tmp.${OUTFILE}" "${ARTFILE}"
 		exit 1
 	fi
 
 	if [ -f "$ARTFILE" ]; then
 		# this embeds a png or jpeg cover into the m4a if it was
 		# found in the original flac file
-		mp4tags -P "$ARTFILE" "${D}/.tmp.${OUTFILE}"
+		mp4tags -P "$ARTFILE" "${DIR}/.tmp.${OUTFILE}"
 		rm -f "${ARTFILE}"
 	fi
 
-	[ ! -z "$TITLE" ] && mp4tags -s "$TITLE" "${D}/.tmp.${OUTFILE}"
-	[ ! -z "$TRACKNUMBER" ] && mp4tags -t "$TRACKNUMBER" "${D}/.tmp.${OUTFILE}"
-	[ ! -z "$TRACKTOTAL" ] && mp4tags -T "$TRACKTOTAL" "${D}/.tmp.${OUTFILE}"
-	[ ! -z "$DISCNUMBER" ] && mp4tags -d "$DISCNUMBER" "${D}/.tmp.${OUTFILE}"
-	[ ! -z "$DISCTOTAL" ] && mp4tags -D "$DISCTOTAL" "${D}/.tmp.${OUTFILE}"
-	[ ! -z "$COMPOSER" ] && mp4tags -w "$COMPOSER" "${D}/.tmp.${OUTFILE}"
-	[ ! -z "$DESCRIPTION" ] && mp4tags -c "$DESCRIPTION" "${D}/.tmp.${OUTFILE}"
-	[ ! -z "$ARTIST" ] && mp4tags -a "$ARTIST" "${D}/.tmp.${OUTFILE}"
-	[ ! -z "$ALBUMARTIST" ] && mp4tags -R "$ALBUMARTIST" "${D}/.tmp.${OUTFILE}"
-	[ ! -z "$ALBUM" ] && mp4tags -A "$ALBUM" "${D}/.tmp.${OUTFILE}"
-	[ ! -z "$GENRE" ] && mp4tags -g "$GENRE" "${D}/.tmp.${OUTFILE}"
-	[ ! -z "$DATE" ] && mp4tags -y "$DATE"  "${D}/.tmp.${OUTFILE}"
+	[ ! -z "$TITLE" ] && mp4tags -s "$TITLE" "${DIR}/.tmp.${OUTFILE}"
+	[ ! -z "$TRACKNUMBER" ] && mp4tags -t "$TRACKNUMBER" "${DIR}/.tmp.${OUTFILE}"
+	[ ! -z "$TRACKTOTAL" ] && mp4tags -T "$TRACKTOTAL" "${DIR}/.tmp.${OUTFILE}"
+	[ ! -z "$DISCNUMBER" ] && mp4tags -d "$DISCNUMBER" "${DIR}/.tmp.${OUTFILE}"
+	[ ! -z "$DISCTOTAL" ] && mp4tags -D "$DISCTOTAL" "${DIR}/.tmp.${OUTFILE}"
+	[ ! -z "$COMPOSER" ] && mp4tags -w "$COMPOSER" "${DIR}/.tmp.${OUTFILE}"
+	[ ! -z "$DESCRIPTION" ] && mp4tags -c "$DESCRIPTION" "${DIR}/.tmp.${OUTFILE}"
+	[ ! -z "$ARTIST" ] && mp4tags -a "$ARTIST" "${DIR}/.tmp.${OUTFILE}"
+	[ ! -z "$ALBUMARTIST" ] && mp4tags -R "$ALBUMARTIST" "${DIR}/.tmp.${OUTFILE}"
+	[ ! -z "$ALBUM" ] && mp4tags -A "$ALBUM" "${DIR}/.tmp.${OUTFILE}"
+	[ ! -z "$GENRE" ] && mp4tags -g "$GENRE" "${DIR}/.tmp.${OUTFILE}"
+	[ ! -z "$DATE" ] && mp4tags -y "$DATE"  "${DIR}/.tmp.${OUTFILE}"
 
 	if [ $? -ne 0 ]; then
-		rm -f "${D}/.flacdecode.${OUTFILE}.wav"
-		rm -f "${D}/${OUTFILE}"
+		rm -f "${DIR}/.flacdecode.${OUTFILE}.wav"
+		rm -f "${DIR}/${OUTFILE}"
 		echo "ERROR: unable to decode new ALAC, exiting." > /dev/stderr
 		exit 1
 	fi
 
-  mv "${D}/.tmp.${OUTFILE}" "${D}/${OUTFILE}"
+  mv "${DIR}/.tmp.${OUTFILE}" "${DIR}/${OUTFILE}"
   OLDSIZE=`stat -f "%z" "$1"`
-  NEWSIZE=`stat -f "%z" "${D}/${OUTFILE}"`
+  NEWSIZE=`stat -f "%z" "${DIR}/${OUTFILE}"`
   PCT=$(( $OLDSIZE * 100 / $NEWSIZE ))
   echo "Successfully converted:"
-  echo "$1 -> ${D}/$OUTFILE"
+  echo "$1 -> ${DIR}/$OUTFILE"
   echo "STATS: ALAC is ${PCT}% the size of the input FLAC"
   if [ $DELETE_WHEN_DONE -gt 0 ]; then
     rm -v "$1"
   fi
 
-	rm -f "${D}/.flacdecode.${OUTFILE}.wav"
+	rm -f "${DIR}/.flacdecode.${OUTFILE}.wav"
 }
 
 function _test_flac() {
