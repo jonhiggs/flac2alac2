@@ -133,12 +133,8 @@ fi
 DELETE_WHEN_DONE=0
 
 for filename in "$@"; do
-	if [ "$filename" = "-d" ]; then
-		DELETE_WHEN_DONE=1
-	fi
-	if [ -f "$filename" ]; then
-		_convert_flac2alac "$filename"
-	fi
+	[ "$filename" == "-d" ] && DELETE_WHEN_DONE=1
+	[ -f "$filename" ] &&  _convert_flac2alac "$filename"
 done
 
 exit 0
