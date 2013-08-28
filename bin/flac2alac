@@ -57,7 +57,7 @@ function _convert_flac2alac {
     metaflac --export-picture-to="${TMP_ARTFILE}" "$1"
   fi
 
-  if [ -f ${TMP_ARTFILE} ]; then
+  if [ -f "${TMP_ARTFILE}" ]; then
     convert "${TMP_ARTFILE}" "${ARTFILE}"
     if [ $? -ne 0 ]; then
       echo "Art is in an unworkable format, cannot continue." > /dev/stderr
@@ -66,6 +66,7 @@ function _convert_flac2alac {
 
   fi
   rm -f "${TMP_ARTFILE}"
+  # ------------------------------------------
 
   if which afconvert; then
     afconvert -d alac "${D}/.flacdecode.${OUTFILE}.wav" "${D}/.tmp.${OUTFILE}"
