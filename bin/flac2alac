@@ -25,6 +25,11 @@ function _convert_flac2alac {
 	OUTFILE="`basename \"$1\" .flac`.m4a"
 	DIR="`dirname \"$1\"`"
 
+  if [ -f $OUTFILE ]; then
+    echo "INFO: Skipping '$1' because it's already converted."
+    return 0
+  fi
+
 	flac -d -o "${DIR}/.flacdecode.${OUTFILE}.wav" "$1"
 
 	if [ $? -ne 0 ]; then
