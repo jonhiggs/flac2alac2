@@ -19,6 +19,7 @@
 SED=`which gsed || which sed`
 
 function _convert_flac2alac {
+  _test_flac "$1"
 	
 	NF="`basename \"$1\" .flac`.m4a"
 	D="`dirname \"$1\"`"
@@ -114,6 +115,14 @@ function _convert_flac2alac {
   fi
 
 	rm -f "${D}/.flacdecode.${NF}.wav"
+}
+
+function _test_flac() {
+  if ! flac --test $1 &> /dev/null; then
+    echo "ERROR: Input file is corrupt." > /dev/stderr
+    exit 1
+  fi
+  return 0
 }
 
 if [ $# -lt 1 ]; then
