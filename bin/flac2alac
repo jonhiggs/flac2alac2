@@ -38,6 +38,7 @@ function __convert_flac2alac {
 	OUTFILE="`basename \"$1\" .flac`.m4a"
 	DIR="`dirname \"$1\"`"
   TMP_WAV="`__mktemp`"
+  TMP_MP4="`__mktemp`"
 
   if [ -f $OUTFILE ]; then
     echo "INFO: Skipping '$1' because it's already converted."
@@ -66,46 +67,45 @@ function __convert_flac2alac {
 	COMPOSER="`metaflac --show-tag=COMPOSER \"$1\" | $SED s/COMPOSER=//ig`"
 
   if which afconvert > /dev/null; then
-    afconvert -d alac "${TMP_WAV}" "${DIR}/.tmp.${OUTFILE}"
+    afconvert -d alac "${TMP_WAV}" "${TMP_MP4}"
   else
-    ffmpeg -v -1 -i "$1" -acodec alac "${DIR}/.tmp.${OUTFILE}"
+    ffmpeg -v -1 -i "$1" -acodec alac "${TMP_MP4}"
   fi
 
 	if [ $? -ne 0 ]; then
 		echo "Problem running conversion, exiting." > /dev/stderr
     __rmtemp
-		rm -f "${DIR}/.tmp.${OUTFILE}" "${ARTFILE}"
+		rm -f "${ARTFILE}"
 		exit 1
 	fi
 
   __generate_picture_for_m4a
-	[ ! -z "$ALBUM" ] && mp4tags -A "$ALBUM" "${DIR}/.tmp.${OUTFILE}"
-	[ ! -z "$ALBUMARTIST" ] && mp4tags -R "$ALBUMARTIST" "${DIR}/.tmp.${OUTFILE}"
-	[ ! -z "$ARTIST" ] && mp4tags -a "$ARTIST" "${DIR}/.tmp.${OUTFILE}"
-	[ ! -z "$ART_FILE" ] && __mp4v2_check_version && mp4tags -P "$ART_FILE" "${DIR}/.tmp.${OUTFILE}"
-	[ ! -z "$COMPOSER" ] && mp4tags -w "$COMPOSER" "${DIR}/.tmp.${OUTFILE}"
-	[ ! -z "$DATE" ] && mp4tags -y "$DATE"  "${DIR}/.tmp.${OUTFILE}"
-	[ ! -z "$DESCRIPTION" ] && mp4tags -c "$DESCRIPTION" "${DIR}/.tmp.${OUTFILE}"
-	[ ! -z "$DISCNUMBER" ] && mp4tags -d "$DISCNUMBER" "${DIR}/.tmp.${OUTFILE}"
-	[ ! -z "$DISCTOTAL" ] && mp4tags -D "$DISCTOTAL" "${DIR}/.tmp.${OUTFILE}"
-	[ ! -z "$GENRE" ] && mp4tags -g "$GENRE" "${DIR}/.tmp.${OUTFILE}"
-	[ ! -z "$TITLE" ] && mp4tags -s "$TITLE" "${DIR}/.tmp.${OUTFILE}"
-	[ ! -z "$TRACKNUMBER" ] && mp4tags -t "$TRACKNUMBER" "${DIR}/.tmp.${OUTFILE}"
-	[ ! -z "$TRACKTOTAL" ] && mp4tags -T "$TRACKTOTAL" "${DIR}/.tmp.${OUTFILE}"
+	[ ! -z "$ALBUM" ] && mp4tags -A "$ALBUM" "${TMP_MP4}"
+	[ ! -z "$ALBUMARTIST" ] && mp4tags -R "$ALBUMARTIST" "${TMP_MP4}"
+	[ ! -z "$ARTIST" ] && mp4tags -a "$ARTIST" "${TMP_MP4}"
+	[ ! -z "$ART_FILE" ] && __mp4v2_check_version && mp4tags -P "$ART_FILE" "${TMP_MP4}"
+	[ ! -z "$COMPOSER" ] && mp4tags -w "$COMPOSER" "${TMP_MP4}"
+	[ ! -z "$DATE" ] && mp4tags -y "$DATE"  "${TMP_MP4}"
+	[ ! -z "$DESCRIPTION" ] && mp4tags -c "$DESCRIPTION" "${TMP_MP4}"
+	[ ! -z "$DISCNUMBER" ] && mp4tags -d "$DISCNUMBER" "${TMP_MP4}"
+	[ ! -z "$DISCTOTAL" ] && mp4tags -D "$DISCTOTAL" "${TMP_MP4}"
+	[ ! -z "$GENRE" ] && mp4tags -g "$GENRE" "${TMP_MP4}"
+	[ ! -z "$TITLE" ] && mp4tags -s "$TITLE" "${TMP_MP4}"
+	[ ! -z "$TRACKNUMBER" ] && mp4tags -t "$TRACKNUMBER" "${TMP_MP4}"
+	[ ! -z "$TRACKTOTAL" ] && mp4tags -T "$TRACKTOTAL" "${TMP_MP4}"
 
   # set to blank string if album artist doesn't exist otherwise it gets the art
   # file for some reason.
-  [ -z "$ALBUMARTIST" ] && mp4tags -R "" "${DIR}/.tmp.${OUTFILE}"
+  [ -z "$ALBUMARTIST" ] && mp4tags -R "" "${TMP_MP4}"
 
   # XXX: doesn't look like this will ever fail.
 	if [ $? -ne 0 ]; then
-		rm -f "${DIR}/${OUTFILE}"
     __rmtemp
 		echo "ERROR: unable to decode new ALAC, exiting." > /dev/stderr
 		exit 1
 	fi
 
-  mv "${DIR}/.tmp.${OUTFILE}" "${DIR}/${OUTFILE}"
+  mv "${TMP_MP4}" "${DIR}/${OUTFILE}"
   OLDSIZE=`stat -f "%z" "$1"`
   NEWSIZE=`stat -f "%z" "${DIR}/${OUTFILE}"`
   PCT=$(( $OLDSIZE * 100 / $NEWSIZE ))
