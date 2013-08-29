@@ -37,7 +37,6 @@ function __rmtemp() {
 function __convert_flac2alac {
 	OUTFILE="`basename \"$1\" .flac`.m4a"
 	DIR="`dirname \"$1\"`"
-  TMP_WAV="`__mktemp`"
   TMP_MP4="`__mktemp`"
 
   if [ -f $OUTFILE ]; then
@@ -45,7 +44,6 @@ function __convert_flac2alac {
     return 0
   fi
 
-	flac -d -o "${TMP_WAV}" "$1"
 
 	if [ $? -ne 0 ]; then
     __rmtemp
@@ -67,6 +65,8 @@ function __convert_flac2alac {
 	COMPOSER="`metaflac --show-tag=COMPOSER \"$1\" | $SED s/COMPOSER=//ig`"
 
   if which afconvert > /dev/null; then
+    TMP_WAV="`__mktemp`"
+    flac -d -o "${TMP_WAV}" "$1"
     afconvert -d alac "${TMP_WAV}" "${TMP_MP4}"
   else
     ffmpeg -v -1 -i "$1" -acodec alac "${TMP_MP4}"
