@@ -1,6 +1,7 @@
 install:
 	install -d ${HOME}/bin
 	install -m 0755 -C ./bin/flac2alac ${HOME}/bin/flac2alac
+	sudo apt-get install flac ffmpeg imagemagick mp4v2
 
 install-homebrew:
 	brew install ffmpeg
