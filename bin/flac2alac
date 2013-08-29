@@ -95,9 +95,6 @@ function _convert_flac2alac {
   # file for some reason.
   [ -z "$ALBUMARTIST" ] && mp4tags -R "" "${DIR}/.tmp.${OUTFILE}"
 
-  echo "album artist is $ALBUM_ARTIST"
-  echo "art file is $ART_FILE"
-
   # XXX: doesn't look like this will ever fail.
 	if [ $? -ne 0 ]; then
 		rm -f "${DIR}/.flacdecode.${OUTFILE}.wav"
