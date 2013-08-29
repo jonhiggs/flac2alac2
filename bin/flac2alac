@@ -1,5 +1,4 @@
 #!/bin/bash
-PATH=$HOME/opt/mp4v2/bin:$PATH
 
 # flac2alac By Arlindo \"Nighto\" Pereira <nighto@nighto.net>
 # (C) 2010. Licensed on GPLv3"
@@ -18,6 +17,18 @@ PATH=$HOME/opt/mp4v2/bin:$PATH
 # also iTunes 10.x will accept either embedded png or jpeg in an alac m4a
 
 SED=`which gsed || which sed`
+
+function _mp4v2_version() {
+  mp4tags --version 2>&1 | egrep -o "[0-9\.]+$"
+}
+
+function _mp4v2_check_version() {
+  if [ `_mp4v2_version | cut -d. -f1` -lt 2 ]; then
+    echo "You must run at least mp4v2 version 2.0.0"
+    echo "You have version `_mp4v2_version`"
+    exit 1
+  fi
+}
 
 function _convert_flac2alac {
 	
@@ -69,7 +80,7 @@ function _convert_flac2alac {
 	[ ! -z "$ALBUM" ] && mp4tags -A "$ALBUM" "${DIR}/.tmp.${OUTFILE}"
 	[ ! -z "$ALBUMARTIST" ] && mp4tags -R "$ALBUMARTIST" "${DIR}/.tmp.${OUTFILE}"
 	[ ! -z "$ARTIST" ] && mp4tags -a "$ARTIST" "${DIR}/.tmp.${OUTFILE}"
-	[ ! -z "$ART_FILE" ] && mp4tags -P "$ART_FILE" "${DIR}/.tmp.${OUTFILE}"
+	[ ! -z "$ART_FILE" ] && _mp4v2_check_version && mp4tags -P "$ART_FILE" "${DIR}/.tmp.${OUTFILE}"
 	[ ! -z "$COMPOSER" ] && mp4tags -w "$COMPOSER" "${DIR}/.tmp.${OUTFILE}"
 	[ ! -z "$DATE" ] && mp4tags -y "$DATE"  "${DIR}/.tmp.${OUTFILE}"
 	[ ! -z "$DESCRIPTION" ] && mp4tags -c "$DESCRIPTION" "${DIR}/.tmp.${OUTFILE}"
