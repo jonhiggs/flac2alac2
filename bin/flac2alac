@@ -53,7 +53,7 @@ function _convert_flac2alac {
 	DESCRIPTION="`metaflac --show-tag=DESCRIPTION \"$1\" | $SED s/DESCRIPTION=//ig`"
 	COMPOSER="`metaflac --show-tag=COMPOSER \"$1\" | $SED s/COMPOSER=//ig`"
 
-  if which afconvert; then
+  if which afconvert > /dev/null; then
     afconvert -d alac "${DIR}/.flacdecode.${OUTFILE}.wav" "${DIR}/.tmp.${OUTFILE}"
   else
     ffmpeg -v -1 -i "$1" -acodec alac "${DIR}/.tmp.${OUTFILE}"
@@ -133,7 +133,7 @@ function _generate_picture_for_m4a() {
     convert $flac_picture $ART_FILE
   fi
 
-  rm $flac_picture
+  rm -f $flac_picture
 
   # then overwrite it with the folder image because that should take
   # precidence.
@@ -148,7 +148,6 @@ function _generate_picture_for_m4a() {
   if [ ! -f $ART_FILE ]; then
     unset $ART_FILE
   else
-    echo "Setting picture to $ART_FILE"
     return 0
   fi
 }
