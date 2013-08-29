@@ -34,6 +34,19 @@ function __rmtemp() {
   find $TMPDIR -name flac2alac.\* -delete
 }
 
+function __die() {
+  echo "ERROR: $1" > /dev/stderr
+  __rmtemp
+  rm -f "${ARTFILE}"
+  exit 1
+}
+
+function __move_on() {
+  echo "INFO: $1" > /dev/stderr
+  __rmtemp
+  rm -f "${ARTFILE}"
+}
+
 function __convert_flac2alac {
 	OUTFILE="`basename \"$1\" .flac`.m4a"
 	DIR="`dirname \"$1\"`"
