@@ -1,4 +1,5 @@
 #!/bin/bash
+PATH=$HOME/opt/mp4v2/bin:$PATH
 
 # flac2alac By Arlindo \"Nighto\" Pereira <nighto@nighto.net>
 # (C) 2010. Licensed on GPLv3"
@@ -51,28 +52,6 @@ function _convert_flac2alac {
 	DESCRIPTION="`metaflac --show-tag=DESCRIPTION \"$1\" | $SED s/DESCRIPTION=//ig`"
 	COMPOSER="`metaflac --show-tag=COMPOSER \"$1\" | $SED s/COMPOSER=//ig`"
 
-  # TODO: Start of cover processing...
-  # move this to a seperate function.
-  ARTFILE="${DIR}/.folder.png"
-  TMP_ARTFILE="${DIR}/.folder.image"
-
-  if [ -f "${DIR}/folder.jpg" ]; then
-    cp "${DIR}/folder.jpg" "${TMP_ARTFILE}"
-  else
-    metaflac --export-picture-to="${TMP_ARTFILE}" "$1"
-  fi
-
-  if [ -f "${TMP_ARTFILE}" ]; then
-    convert "${TMP_ARTFILE}" "${ARTFILE}"
-    if [ $? -ne 0 ]; then
-      echo "Art is in an unworkable format, cannot continue." > /dev/stderr
-      exit 1
-    fi
-
-  fi
-  rm -f "${TMP_ARTFILE}"
-  # ------------------------------------------
-
   if which afconvert; then
     afconvert -d alac "${DIR}/.flacdecode.${OUTFILE}.wav" "${DIR}/.tmp.${OUTFILE}"
   else
@@ -86,26 +65,29 @@ function _convert_flac2alac {
 		exit 1
 	fi
 
-	if [ -f "$ARTFILE" ]; then
-		# this embeds a png or jpeg cover into the m4a if it was
-		# found in the original flac file
-		mp4tags -P "$ARTFILE" "${DIR}/.tmp.${OUTFILE}"
-		rm -f "${ARTFILE}"
-	fi
-
+  _generate_picture_for_m4a
+	[ ! -z "$ALBUM" ] && mp4tags -A "$ALBUM" "${DIR}/.tmp.${OUTFILE}"
+	[ ! -z "$ALBUMARTIST" ] && mp4tags -R "$ALBUMARTIST" "${DIR}/.tmp.${OUTFILE}"
+	[ ! -z "$ARTIST" ] && mp4tags -a "$ARTIST" "${DIR}/.tmp.${OUTFILE}"
+	[ ! -z "$ART_FILE" ] && mp4tags -P "$ART_FILE" "${DIR}/.tmp.${OUTFILE}"
+	[ ! -z "$COMPOSER" ] && mp4tags -w "$COMPOSER" "${DIR}/.tmp.${OUTFILE}"
+	[ ! -z "$DATE" ] && mp4tags -y "$DATE"  "${DIR}/.tmp.${OUTFILE}"
+	[ ! -z "$DESCRIPTION" ] && mp4tags -c "$DESCRIPTION" "${DIR}/.tmp.${OUTFILE}"
+	[ ! -z "$DISCNUMBER" ] && mp4tags -d "$DISCNUMBER" "${DIR}/.tmp.${OUTFILE}"
+	[ ! -z "$DISCTOTAL" ] && mp4tags -D "$DISCTOTAL" "${DIR}/.tmp.${OUTFILE}"
+	[ ! -z "$GENRE" ] && mp4tags -g "$GENRE" "${DIR}/.tmp.${OUTFILE}"
 	[ ! -z "$TITLE" ] && mp4tags -s "$TITLE" "${DIR}/.tmp.${OUTFILE}"
 	[ ! -z "$TRACKNUMBER" ] && mp4tags -t "$TRACKNUMBER" "${DIR}/.tmp.${OUTFILE}"
 	[ ! -z "$TRACKTOTAL" ] && mp4tags -T "$TRACKTOTAL" "${DIR}/.tmp.${OUTFILE}"
-	[ ! -z "$DISCNUMBER" ] && mp4tags -d "$DISCNUMBER" "${DIR}/.tmp.${OUTFILE}"
-	[ ! -z "$DISCTOTAL" ] && mp4tags -D "$DISCTOTAL" "${DIR}/.tmp.${OUTFILE}"
-	[ ! -z "$COMPOSER" ] && mp4tags -w "$COMPOSER" "${DIR}/.tmp.${OUTFILE}"
-	[ ! -z "$DESCRIPTION" ] && mp4tags -c "$DESCRIPTION" "${DIR}/.tmp.${OUTFILE}"
-	[ ! -z "$ARTIST" ] && mp4tags -a "$ARTIST" "${DIR}/.tmp.${OUTFILE}"
-	[ ! -z "$ALBUMARTIST" ] && mp4tags -R "$ALBUMARTIST" "${DIR}/.tmp.${OUTFILE}"
-	[ ! -z "$ALBUM" ] && mp4tags -A "$ALBUM" "${DIR}/.tmp.${OUTFILE}"
-	[ ! -z "$GENRE" ] && mp4tags -g "$GENRE" "${DIR}/.tmp.${OUTFILE}"
-	[ ! -z "$DATE" ] && mp4tags -y "$DATE"  "${DIR}/.tmp.${OUTFILE}"
 
+  # set to blank string if album artist doesn't exist otherwise it gets the art
+  # file for some reason.
+  [ -z "$ALBUMARTIST" ] && mp4tags -R "" "${DIR}/.tmp.${OUTFILE}"
+
+  echo "album artist is $ALBUM_ARTIST"
+  echo "art file is $ART_FILE"
+
+  # XXX: doesn't look like this will ever fail.
 	if [ $? -ne 0 ]; then
 		rm -f "${DIR}/.flacdecode.${OUTFILE}.wav"
 		rm -f "${DIR}/${OUTFILE}"
@@ -139,6 +121,39 @@ if [ $# -lt 1 ]; then
 	echo "usage: $0 [-d] <file.flac> [file2.flac] [...]" > /dev/stderr
 	exit 1
 fi
+
+function _generate_picture_for_m4a() {
+	FLAC_FILE="`basename \"$OUT_FILE\" .m4a`.flac"
+	DIR="`dirname \"$FLAC_FILE\"`"
+  ART_FILE="${DIR}/.folder.png"
+
+  # grab image from flac if it exists.
+  flac_picture="`mktemp -tflacpicture`.png"
+  metaflac --export-picture-to="$flac_picture" "$FLAC_FILE" &> /dev/null
+  if [ $? -eq 0 ]; then
+    echo "Extracted picture from flac."
+    convert $flac_picture $ART_FILE
+  fi
+
+  rm $flac_picture
+
+  # then overwrite it with the folder image because that should take
+  # precidence.
+  for f in folder.jpg folder.jpeg; do
+    [ -f $f ] && convert $f $ART_FILE
+  done
+
+  for f in folder.png; do
+    [ -f $f ] && cp $f $ART_FILE
+  done
+
+  if [ ! -f $ART_FILE ]; then
+    unset $ART_FILE
+  else
+    echo "Setting picture to $ART_FILE"
+    return 0
+  fi
+}
 
 DELETE_WHEN_DONE=0
 
