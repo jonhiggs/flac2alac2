@@ -23,6 +23,17 @@ function __mp4v2_check_version() {
   fi
 }
 
+function __mktemp() {
+  file=$(mktemp -t flac2alac)
+  rm $file
+  echo $file
+}
+
+function __rmtemp() {
+  [ -z $TMPDIR ] && TMPDIR="/tmp"
+  find $TMPDIR -name flac2alac.\* -delete
+}
+
 function __convert_flac2alac {
 	OUTFILE="`basename \"$1\" .flac`.m4a"
 	DIR="`dirname \"$1\"`"
