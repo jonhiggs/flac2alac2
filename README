@@ -45,7 +45,7 @@ can install them with
 
 If you have homebrew on OSX you can install with
 
-  make osx-homebrew
+  make install-homebrew
 
 Also required is the mpeg4v2 package that includes the mp4tags utility, fetch
 it from here:
