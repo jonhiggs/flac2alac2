@@ -31,9 +31,6 @@ function _mp4v2_check_version() {
 }
 
 function _convert_flac2alac {
-	
-  # gaa, i don't like abbreviations.
-  # D is the working directory.
 	OUTFILE="`basename \"$1\" .flac`.m4a"
 	DIR="`dirname \"$1\"`"
 
