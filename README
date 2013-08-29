@@ -41,14 +41,13 @@ docs.)
 flac2alac uses flac and ffmpeg to decode/encode the audio files. On Ubuntu, you
 can install them with
 
- sudo apt-get install flac ffmpeg
+ make install
 
-Also required is the mpeg4ip package that includes the mp4tags utility, fetch
+If you have homebrew on OSX you can install with
+
+  make osx-homebrew
+
+Also required is the mpeg4v2 package that includes the mp4tags utility, fetch
 it from here:
 
- cvs -d:pserver:anonymous@mpeg4ip.cvs.sourceforge.net:/cvsroot/mpeg4ip login 
- cvs -d:pserver:anonymous@mpeg4ip.cvs.sourceforge.net:/cvsroot/mpeg4ip co -P mpeg4ip
-
-(their URL is http://mpeg4ip.sourceforge.net/downloads/index.php but they
-appear to have removed all tarball downloads.)
-
+  http://mp4v2.googlecode.com
