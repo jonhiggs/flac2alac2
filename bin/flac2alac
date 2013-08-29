@@ -11,19 +11,19 @@
 
 SED=`which gsed || which sed`
 
-function _mp4v2_version() {
+function __mp4v2_version() {
   mp4tags --version 2>&1 | egrep -o "[0-9\.]+$"
 }
 
-function _mp4v2_check_version() {
-  if [ `_mp4v2_version | cut -d. -f1` -lt 2 ]; then
+function __mp4v2_check_version() {
+  if [ `__mp4v2_version | cut -d. -f1` -lt 2 ]; then
     echo "You must run at least mp4v2 version 2.0.0"
-    echo "You have version `_mp4v2_version`"
+    echo "You have version `__mp4v2_version`"
     exit 1
   fi
 }
 
-function _convert_flac2alac {
+function __convert_flac2alac {
 	OUTFILE="`basename \"$1\" .flac`.m4a"
 	DIR="`dirname \"$1\"`"
 
@@ -66,11 +66,11 @@ function _convert_flac2alac {
 		exit 1
 	fi
 
-  _generate_picture_for_m4a
+  __generate_picture_for_m4a
 	[ ! -z "$ALBUM" ] && mp4tags -A "$ALBUM" "${DIR}/.tmp.${OUTFILE}"
 	[ ! -z "$ALBUMARTIST" ] && mp4tags -R "$ALBUMARTIST" "${DIR}/.tmp.${OUTFILE}"
 	[ ! -z "$ARTIST" ] && mp4tags -a "$ARTIST" "${DIR}/.tmp.${OUTFILE}"
-	[ ! -z "$ART_FILE" ] && _mp4v2_check_version && mp4tags -P "$ART_FILE" "${DIR}/.tmp.${OUTFILE}"
+	[ ! -z "$ART_FILE" ] && __mp4v2_check_version && mp4tags -P "$ART_FILE" "${DIR}/.tmp.${OUTFILE}"
 	[ ! -z "$COMPOSER" ] && mp4tags -w "$COMPOSER" "${DIR}/.tmp.${OUTFILE}"
 	[ ! -z "$DATE" ] && mp4tags -y "$DATE"  "${DIR}/.tmp.${OUTFILE}"
 	[ ! -z "$DESCRIPTION" ] && mp4tags -c "$DESCRIPTION" "${DIR}/.tmp.${OUTFILE}"
@@ -107,7 +107,7 @@ function _convert_flac2alac {
 	rm -f "${DIR}/.flacdecode.${OUTFILE}.wav"
 }
 
-function _test_flac() {
+function __test_flac() {
   if ! flac --test $1 &> /dev/null; then
     echo "ERROR: Input file '$1' is corrupt." > /dev/stderr
     return 1
@@ -120,7 +120,7 @@ if [ $# -lt 1 ]; then
 	exit 1
 fi
 
-function _generate_picture_for_m4a() {
+function __generate_picture_for_m4a() {
 	FLAC_FILE="`basename \"$OUT_FILE\" .m4a`.flac"
 	DIR="`dirname \"$FLAC_FILE\"`"
   ART_FILE="${DIR}/.folder.png"
@@ -157,7 +157,7 @@ DELETE_WHEN_DONE=0
 for filename in "$@"; do
 	[ "$filename" == "-d" ] && DELETE_WHEN_DONE=1
 	if [ -f "$filename" ]; then
-    _test_flac "$filename" && _convert_flac2alac "$filename"
+    __test_flac "$filename" && __convert_flac2alac "$filename"
   fi
 done
 
