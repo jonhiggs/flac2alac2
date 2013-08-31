@@ -46,3 +46,16 @@ function __has_ffmpeg() {
     return 1
   fi
 }
+
+function __has_mp4v2() {
+  if [ -z $(which mp4tags) ]; then
+    __log_err "mp4v2 2.0.0 or greater needs to be installed"
+    return 1
+  fi
+
+  if [ `mp4tags --version 2>&1 | egrep -o "[0-9\.]+$" | cut -d. -f1` -lt 2 ]; then
+    __log_err "mp4v2 2.0.0 or greater needs to be installed"
+    return 1
+  fi
+}
+

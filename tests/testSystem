@@ -16,7 +16,7 @@ function test_has_flac() {
 
   PATH="/bin:/usr/bin"
   assertFalse "should return false if flac is not in the path" \
-              "flac_to_wav $TEST_FLAC1"
+              "__has_flac"
 }
 
 function test_has_ffmpeg() {
@@ -25,9 +25,17 @@ function test_has_ffmpeg() {
 
   PATH="/bin:/usr/bin"
   assertFalse "should return false if ffmpeg is not in the path" \
-              "flac_to_alac $TEST_FLAC1"
+              "__has_ffmpeg"
 }
 
+function test_has_mp4v2() {
+  assertTrue  "should return true" \
+              "__has_mp4v2"
+
+  PATH="/bin:/usr/bin"
+  assertFalse "should return false if ffmpeg is not in the path" \
+              "__has_mp4v2"
+}
 
 function test_mktemp() {
   assertTrue  "should make a tmp file should return a file path"                      \
@@ -46,8 +54,10 @@ function test_rmtemp() {
               "__rmtemp"
 }
 
+
 function oneTimeSetUp() {
   source ../lib/system.inc
+  PATH="{HOME}/opt/mp4v2/bin:$PATH"
   ORG_PATH=$PATH
 }
 
