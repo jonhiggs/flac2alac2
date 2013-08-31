@@ -1,0 +1,46 @@
+function test_has_afconvert() {
+  assertTrue  "should return true" \
+              "__has_afconvert"
+
+  old_path=$PATH
+  PATH="/bin"
+  assertFalse "should return false when afconvert is not in the path" \
+              "__has_afconvert"
+
+  PATH=$old_path
+}
+
+function test_has_flac() {
+  assertTrue  "should return true" \
+              "__has_flac"
+
+  old_path=$PATH
+  PATH="/bin:/usr/bin"
+  assertFalse "should return false if flac is not in the path" \
+              "flac_to_wav $TEST_FLAC1"
+  PATH=$old_path
+}
+
+function test_mktemp() {
+  assertTrue  "should make a tmp file should return a file path"                      \
+              "[ ! -z $(__mktemp) ]"
+
+  assertFalse "returned file should not yet exist"          \
+              "[ -f $(__mktemp) ]"
+}
+
+function test_rmtemp() {
+  assertTrue  "should return true if no files are to be deleted" \
+              "__rmtemp"
+
+  touch $(__mktemp)
+  assertTrue  "should return true if files were deleted"  \
+              "__rmtemp"
+}
+
+function oneTimeSetUp() {
+  source ../lib/system.inc
+}
+
+source ./shunit/src/shunit2
+
