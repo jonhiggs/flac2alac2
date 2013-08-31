@@ -39,3 +39,10 @@ function __has_flac() {
     return 1
   fi
 }
+
+function __has_ffmpeg() {
+  if [ -z $(which ffmpeg) ]; then
+    __log_err "flac_to_alac requires ffmpeg"
+    return 1
+  fi
+}

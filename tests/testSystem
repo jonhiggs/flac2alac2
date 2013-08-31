@@ -14,12 +14,20 @@ function test_has_flac() {
   assertTrue  "should return true" \
               "__has_flac"
 
-  old_path=$PATH
   PATH="/bin:/usr/bin"
   assertFalse "should return false if flac is not in the path" \
               "flac_to_wav $TEST_FLAC1"
-  PATH=$old_path
 }
+
+function test_has_ffmpeg() {
+  assertTrue  "should return true" \
+              "__has_ffmpeg"
+
+  PATH="/bin:/usr/bin"
+  assertFalse "should return false if ffmpeg is not in the path" \
+              "flac_to_alac $TEST_FLAC1"
+}
+
 
 function test_mktemp() {
   assertTrue  "should make a tmp file should return a file path"                      \
@@ -40,6 +48,11 @@ function test_rmtemp() {
 
 function oneTimeSetUp() {
   source ../lib/system.inc
+  ORG_PATH=$PATH
+}
+
+function tearDown() {
+  PATH=$ORG_PATH
 }
 
 source ./shunit/src/shunit2

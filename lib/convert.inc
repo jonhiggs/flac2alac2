@@ -36,5 +36,23 @@ function wav_to_alac() {
 }
 
 function flac_to_alac() {
-  ffmpeg -v -1 -i "$1" -acodec alac "${TMP_MP4}"|| __die "There was a problem converting flac to alac."
+  if [ $# -ne 1 ]; then
+    __log_err "You must parse in a flac file."
+    return 1
+  fi
+
+  if [ ! -f $1 ]; then
+    __log_err "Input file does not exist."
+    return 1
+  fi
+
+  tmp_alac="`__mktemp`.m4a"
+  ffmpeg -v -1 -i "$1" -acodec alac "${tmp_alac}"
+
+  if [ -s ${tmp_alac} ]; then
+    echo ${tmp_alac}
+    return 0
+  else
+    return 1
+  fi
 }
