@@ -28,21 +28,21 @@ function __log_err() {
 
 function __has_afconvert() {
   if [ -z $(which afconvert) ]; then
-    __log_err "flac_to_wav requires afconvert"
+    __log_err "afconvert is required"
     return 1
   fi
 }
 
 function __has_flac() {
   if [ -z $(which flac) ]; then
-    __log_err "flac_to_wav requires flac"
+    __log_err "flac is required."
     return 1
   fi
 }
 
 function __has_ffmpeg() {
   if [ -z $(which ffmpeg) ]; then
-    __log_err "flac_to_alac requires ffmpeg"
+    __log_err "ffmpeg is required"
     return 1
   fi
 }
@@ -59,3 +59,9 @@ function __has_mp4v2() {
   fi
 }
 
+function __has_imagemagick() {
+  if [ -z $(which convert) ]; then
+    __log_err "ImageMagick is required"
+    return 1
+  fi
+}
