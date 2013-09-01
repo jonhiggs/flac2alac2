@@ -39,7 +39,7 @@ function test_get_tag_from_flac() {
                 "get_tag_from_flac $TEST_FLAC1 disk_total" 
 
   assertEquals  "return description" \
-                "Tapers: Debbie Ocoboc / Don Browning"     \
+                "has a jpg image"     \
                 "`get_tag_from_flac $TEST_FLAC1 description`" 
 
   assertFalse   "return composer" \
@@ -78,16 +78,31 @@ function test_get_tag_from_alac() {
                 "`get_tag_from_alac $TEST_ALAC1 'date'`"
 }
 
+function test_get_image_from_flac() {
+  assertFalse   "return false if no input file is set" \
+                "get_image_from_flac"
+
+  assertTrue    "return true when we have a jpeg image" \
+                "[ -s `get_image_from_flac $TEST_FLAC1` ]"
+
+  assertFalse   "return false if input has no image" \
+                "get_image_from_flac $TEST_FLAC2"
+
+  assertTrue    "return true when we have a png image" \
+                "[ -s `get_image_from_flac $TEST_FLAC3` ]"
+}
+
 function oneTimeSetUp() {
   source ../lib/convert.inc
   source ../lib/meta.inc
   source ../lib/system.inc
   TEST_FLAC1="./files/flac1.flac"
+  TEST_FLAC2="./files/flac2.flac"
+  TEST_FLAC3="./files/flac3.flac"
   TEST_ALAC1=`flac_to_alac $TEST_FLAC1`
 }
 
 function oneTimeTearDown() {
-  cp $TEST_ALAC1 ~/Desktop/out.m4a
   __rmtemp
 }
 
