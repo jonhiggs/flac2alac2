@@ -56,3 +56,18 @@ function flac_to_alac() {
     return 1
   fi
 }
+
+function conversion_stats() {
+  if [ $# -ne 2 ]; then
+    echo "You must provide both an input and an output file."
+    return 1
+  fi
+
+  in_file=$1
+  out_file=$2
+
+  in_size=`stat -f "%z" "$in_file"`
+  out_size=`stat -f "%z" "$out_file"`
+  PCT=$(( $in_size * 100 / $out_size ))
+  echo "ALAC is ${PCT}% the size of the input FLAC"
+}

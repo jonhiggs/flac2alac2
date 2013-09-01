@@ -46,6 +46,11 @@ function test_flac_to_alac() {
 
   assertTrue "should have a file type of MPEG" \
               "file `flac_to_alac $TEST_FLAC1` | grep MPEG"
+
+function test_conversion_stats() {
+  assertEquals  "input and output are the same size" \
+                "ALAC is 100% the size of the input FLAC" \
+                "`conversion_stats $TEST_FLAC1 $TEST_FLAC1`"
 }
 
 function oneTimeSetUp() {
