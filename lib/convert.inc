@@ -1,3 +1,15 @@
+function flac_valid() {
+  if [ $# -ne 1 ]; then
+    __log_err "You must parse in a flac file"
+    return 1
+  fi
+
+  if ! flac --test $1 &> /dev/null; then
+    __log_err "Input file '$1' is corrupt."
+    return 1
+  fi
+}
+
 function flac_to_wav() {
   if [ $# -ne 1 ]; then
     __log_err "You must parse in a flac file"

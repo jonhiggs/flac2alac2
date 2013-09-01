@@ -1,3 +1,11 @@
+function test_flac_valid() {
+  assertTrue  "should return true with a valid flac file" \
+              "flac_valid $TEST_FLAC1"
+
+  assertFalse "should return false when not a flac file" \
+              "flac_valid ./files/README"
+}
+
 function test_flac_to_wav() {
   assertFalse "should return false if flac file is not in \$1" \
               "flac_to_wav"
