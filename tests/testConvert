@@ -40,20 +40,21 @@ function test_wav_to_alac() {
 }
 
 function test_flac_to_alac() {
-  assertFalse "should return false if wav file is not in \$1" \
-              "flac_to_alac"
+  assertFalse   "should return false if wav file is not in \$1" \
+                "flac_to_alac"
 
-  assertFalse "should return false if wav doesn't exist" \
-              "flac_to_alac 'blah'"
+  assertFalse   "should return false if wav doesn't exist" \
+                "flac_to_alac 'blah'"
 
-  assertTrue "should have a non-empty file as output" \
-              "[ -s $(flac_to_alac $TEST_FLAC1) ]"
+  assertTrue    "should have a non-empty file as output" \
+                 "[ -s $(flac_to_alac $TEST_FLAC1) ]"
 
-  assertTrue "should return true if all is good" \
-              "flac_to_alac $TEST_FLAC1"
+  assertTrue    "should return true if all is good" \
+                 "flac_to_alac $TEST_FLAC1"
 
-  assertTrue "should have a file type of MPEG" \
-              "file `flac_to_alac $TEST_FLAC1` | grep MPEG"
+  assertTrue    "should have a file type of MPEG" \
+                "file `flac_to_alac $TEST_FLAC1` | grep MPEG"
+}
 
 function test_conversion_stats() {
   assertEquals  "input and output are the same size" \
