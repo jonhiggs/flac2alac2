@@ -83,3 +83,5 @@ function conversion_stats() {
   PCT=$(( $in_size * 100 / $out_size ))
   echo "ALAC is ${PCT}% the size of the input FLAC"
 }
+
+# vim: set ft=sh :
