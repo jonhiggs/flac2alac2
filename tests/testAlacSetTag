@@ -77,6 +77,15 @@ test_add_comment() {
 }
 
 # test bad inputs
+test_get_bad_tag() {
+  assertFalse   "should not be able to find a bad tag" \
+                "$GET_TAG_CMD abcdefghijk"
+}
+
+test_add_bad_tag() {
+  assertFalse   "should not set an bad tag" \
+                "$SET_TAG_CMD 'abcdefg=abcdefg'"
+}
 
 function oneTimeSetUp() {
   source $(dirname $0)/../lib/convert.inc

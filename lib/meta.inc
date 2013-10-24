@@ -105,6 +105,7 @@ function add_tag_to_alac() {
     ;;
     *)
       __log_error "Tag '$tag' not yet supported"
+      return 1
     ;;
   esac
 
@@ -146,6 +147,7 @@ function get_tag_from_alac() {
     ;;
     *)
       __log_err "Tag '$tag' not yet supported"
+      return 1
     ;;
   esac
 
