@@ -44,6 +44,18 @@ function test_get_tag_from_flac() {
 
   assertFalse   "return composer" \
                 "get_tag_from_flac $TEST_FLAC1 composer" 
+
+  art_file=`get_tag_from_flac $TEST_FLAC1 art_file`
+  assertTrue    "art file is not empty" \
+                "[ ! -z $art_file ]"
+
+  assertEquals  "return art_file" \
+                "JPEG image data, EXIF standard" \
+                "`file -b $art_file`"
+
+  assertEquals  "artfile has correct md5 sum" \
+                "ba738cea1bf5753e9fc48a08088258b4" \
+                "`cat ${art_file} | md5`"
 }
 
 function test_add_tag_to_alac() {

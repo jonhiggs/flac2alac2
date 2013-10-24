@@ -22,6 +22,15 @@ function get_tag_from_flac() {
     "disc_total")
       tag="disctotal"
     ;;
+    "art_file")
+      image_file="`get_image_from_flac $file`"
+      if [ ! -z "$image_file" ]; then
+        echo $image_file
+        return 0
+      else
+        return 1
+      fi
+    ;;
   esac
 
   data=`metaflac --show-tag=${tag} "$1"`
