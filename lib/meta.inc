@@ -204,27 +204,4 @@ function get_image_from_alac() {
   fi
 }
 
-  #if [ $? -eq 0 ]; then
-  #  echo "Extracted picture from flac."
-  #  convert $flac_picture $ART_FILE
-  #fi
-
-  #rm -f $flac_picture
-
-  ## then overwrite it with the folder image because that should take
-  ## precidence.
-  #for f in folder.jpg folder.jpeg; do
-  #  [ -f $f ] && convert $f $ART_FILE
-  #done
-
-  #for f in folder.png; do
-  #  [ -f $f ] && cp $f $ART_FILE
-  #done
-
-  #if [ ! -f $ART_FILE ]; then
-  #  unset $ART_FILE
-  #else
-  #  return 0
-  #fi
-
 # vim: set ft=sh :
