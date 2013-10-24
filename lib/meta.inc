@@ -66,7 +66,7 @@ function add_tag_to_alac() {
     "album_artist")
       switch="-R"
     ;;
-    "art_file")
+    "art")
       [ -s $data ] || __log_error "Data must contain an image file"
       switch="-P"
     ;;
@@ -121,6 +121,15 @@ function get_tag_from_alac() {
   fi
 
   case $tag in
+    "art")
+      if [ `get_tag_from_alac $file art_pieces` -ne 0 ]; then
+        tag=`get_image_from_alac "$file"`
+      fi   
+    ;;
+    "art_pieces")
+      tag=`mp4info "$file" | grep "^\ Cover\ Art\ pieces:" | cut -d: -f2`
+      if [ -z $tag ]; then tag=0; fi
+    ;;
     "artist")
       tag=`mp4info "$file" | grep "^\ Artist:" | cut -d: -f2- | sed 's/^ //g'`
     ;;
@@ -163,7 +172,7 @@ function get_image_from_flac() {
     __log_err "You must provide a valid flac file"
   fi
 
-  image_type=`metaflac --list $file | grep "MIME type" | awk '{ print $3 }'`
+  image_type=`metaflac --list "$file" | grep "MIME type" | awk '{ print $3 }'`
 
   case $image_type in
     "image/jpeg")
@@ -180,6 +189,19 @@ function get_image_from_flac() {
 
   echo "${tmp_img}.jpg"
   return 0
+}
+
+function get_image_from_alac() {
+  file=$1
+  art_file=`mp4art -f --extract "$file" | sed 's/.*->\ //g'`
+  if [ -f $art_file ]; then
+    tmp_art=`__mktemp`
+    mv "$art_file" "$tmp_art"
+    echo $tmp_art
+  else
+    echo "Art failed to extract."
+    return 1
+  fi
 }
 
   #if [ $? -eq 0 ]; then

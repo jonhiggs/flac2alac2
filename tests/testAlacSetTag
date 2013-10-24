@@ -76,6 +76,25 @@ test_add_comment() {
                 "`$GET_TAG_CMD comment`"
 }
 
+test_add_art() {
+  assertFalse   "should not have an art_file" \
+                "$GET_TAG_CMD art_file"
+
+  assertEquals  "should have 0 art pieces" \
+                "0" \
+                "`$GET_TAG_CMD art_pieces`"
+
+  assertTrue    "should set art file" \
+                "$SET_TAG_CMD 'art=$TEST_ART'"
+
+  assertTrue    "should get an art file" \
+                "[ -f `$GET_TAG_CMD art` ]"
+
+  assertEquals  "should have 1 art piece" \
+                "1" \
+                "`$GET_TAG_CMD art_pieces`"
+}
+
 # test bad inputs
 test_get_bad_tag() {
   assertFalse   "should not be able to find a bad tag" \
@@ -92,6 +111,7 @@ function oneTimeSetUp() {
   source $(dirname $0)/../lib/meta.inc
   source $(dirname $0)/../lib/system.inc
   TEST_ALAC="$(dirname $0)/files/without_tags.m4a"
+  TEST_ART="$(dirname $0)/files/art_files/art.jpg"
   GET_TAG_CMD="get_tag_from_alac $TEST_ALAC"
   SET_TAG_CMD="add_tag_to_alac $TEST_ALAC"
 }
