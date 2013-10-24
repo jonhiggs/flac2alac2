@@ -4,7 +4,7 @@ test_add_artist() {
                 "$GET_TAG_CMD artist"
 
   assertTrue    "should set an artist" \
-                "$SET_TAG_CMD 'artist=$artist'"
+                "$SET_TAG_CMD artist '$artist'"
 
   assertEquals  "should have an artist" \
                 "$artist" \
@@ -17,7 +17,7 @@ test_add_album_artist() {
                 "$GET_TAG_CMD album_artist"
 
   assertTrue    "should set an album artist" \
-                "$SET_TAG_CMD 'album_artist=$album_artist'"
+                "$SET_TAG_CMD album_artist '$album_artist'"
 
   assertEquals  "should have an album artist" \
                 "$album_artist" \
@@ -30,7 +30,7 @@ test_add_album() {
                 "$GET_TAG_CMD album"
 
   assertTrue    "should set an album" \
-                "$SET_TAG_CMD 'album=$album'"
+                "$SET_TAG_CMD album '$album'"
 
   assertEquals  "should have an album" \
                 "$album" \
@@ -43,7 +43,7 @@ test_add_genre() {
                 "$GET_TAG_CMD genre"
 
   assertTrue    "should set an genre" \
-                "$SET_TAG_CMD 'genre=$genre'"
+                "$SET_TAG_CMD genre '$genre'"
 
   assertEquals  "should have an genre" \
                 "$genre" \
@@ -56,7 +56,7 @@ test_add_date() {
                 "$GET_TAG_CMD date"
 
   assertTrue    "should set an date" \
-                "$SET_TAG_CMD 'date=$date'"
+                "$SET_TAG_CMD date '$date'"
 
   assertEquals  "should have an date" \
                 "$date" \
@@ -69,7 +69,7 @@ test_add_comment() {
                 "$GET_TAG_CMD comment"
 
   assertTrue    "should set an comment" \
-                "$SET_TAG_CMD 'comment=$comment'"
+                "$SET_TAG_CMD comment '$comment'"
 
   assertEquals  "should have an comment" \
                 "$comment" \
@@ -85,7 +85,7 @@ test_add_art() {
                 "`$GET_TAG_CMD art_pieces`"
 
   assertTrue    "should set art file" \
-                "$SET_TAG_CMD 'art=$TEST_ART'"
+                "$SET_TAG_CMD art '$TEST_ART'"
 
   assertTrue    "should get an art file" \
                 "[ -f `$GET_TAG_CMD art` ]"
@@ -103,7 +103,7 @@ test_get_bad_tag() {
 
 test_add_bad_tag() {
   assertFalse   "should not set an bad tag" \
-                "$SET_TAG_CMD 'abcdefg=abcdefg'"
+                "$SET_TAG_CMD abcdefg 'abcdefg'"
 }
 
 function oneTimeSetUp() {

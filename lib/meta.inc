@@ -49,9 +49,8 @@ function get_tag_from_flac() {
 function add_tag_to_alac() {
   # TODO: don't split the tag and data
   file=$1
-  input=$2
-  tag=`echo $input | cut -d= -f1`
-  data=`echo $input | cut -d= -f2`
+  tag=$2
+  data=$3
 
   if [ ! -s $file ]; then
     file $file
@@ -59,8 +58,8 @@ function add_tag_to_alac() {
     return 1
   fi
 
-  if [ $# -ne 2 ]; then
-    __log_err "You must provide the tag you want to set"
+  if [ $# -ne 3 ]; then
+    __log_err "You must provide the file, tag, and data you want to set"
     return 1
   fi
 
