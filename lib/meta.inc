@@ -176,7 +176,7 @@ function add_tag_to_flac(){
     #  switch="-T"
     #;;
     *)
-      __log_error "Tag '$tag' not yet supported"
+      __log_error "Tag '$name' not yet supported"
       return 1
     ;;
   esac
@@ -191,7 +191,12 @@ function get_tag_from_alac() {
   tag=$2
 
   if [ ! -s $file ]; then
-    __log_err "You must provide a valid alac file"
+    __log_err "You must provide a valid alac file."
+  fi
+
+  if [ $# -ne 2 ]; then
+    __log_err "You must provide a file and the tag to get."
+    return 0
   fi
 
   case $tag in
