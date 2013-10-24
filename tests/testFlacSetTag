@@ -1,0 +1,136 @@
+test_add_artist() {
+  artist="i am an artist"
+  assertFalse   "should not have an artist" \
+                "$GET_TAG_CMD artist"
+
+  assertTrue    "should set an artist" \
+                "$SET_TAG_CMD artist '$artist'"
+
+  assertEquals  "should have an artist" \
+                "$artist" \
+                "`$GET_TAG_CMD artist`"
+}
+
+test_add_album_artist() {
+  album_artist="i am an album artist"
+  assertFalse   "should not have an album artist" \
+                "$GET_TAG_CMD album_artist"
+
+  assertTrue    "should set an album artist" \
+                "$SET_TAG_CMD album_artist '$album_artist'"
+
+  assertEquals  "should have an album artist" \
+                "$album_artist" \
+                "`$GET_TAG_CMD album_artist`"
+}
+
+test_add_album() {
+  album="i am an album"
+  assertFalse   "should not have an album" \
+                "$GET_TAG_CMD album"
+
+  assertTrue    "should set an album" \
+                "$SET_TAG_CMD album '$album'"
+
+  assertEquals  "should have an album" \
+                "$album" \
+                "`$GET_TAG_CMD album`"
+}
+
+test_add_genre() {
+  genre="i am a blues man"
+  assertFalse   "should not have a genre" \
+                "$GET_TAG_CMD genre"
+
+  assertTrue    "should set an genre" \
+                "$SET_TAG_CMD genre '$genre'"
+
+  assertEquals  "should have an genre" \
+                "$genre" \
+                "`$GET_TAG_CMD genre`"
+}
+
+test_add_date() {
+  date="2009"
+  assertFalse   "should not have a date" \
+                "$GET_TAG_CMD date"
+
+  assertTrue    "should set an date" \
+                "$SET_TAG_CMD date '$date'"
+
+  assertEquals  "should have an date" \
+                "$date" \
+                "`$GET_TAG_CMD date`"
+}
+
+test_add_comment() {
+  comment="this is a comment"
+  assertFalse   "should not have a comment" \
+                "$GET_TAG_CMD comment"
+
+  assertFalse   "should not have a description" \
+                "$GET_TAG_CMD description"
+
+  assertTrue    "should set an comment" \
+                "$SET_TAG_CMD comment '$comment'"
+
+  assertEquals  "should have an comment" \
+                "$comment" \
+                "`$GET_TAG_CMD comment`"
+
+  assertEquals  "should have an description" \
+                "$comment" \
+                "`$GET_TAG_CMD description`"
+}
+
+#test_add_art() {
+#  assertFalse   "should not have an art_file" \
+#                "$GET_TAG_CMD art_file"
+#
+#  assertEquals  "should have 0 art pieces" \
+#                "0" \
+#                "`$GET_TAG_CMD art_pieces`"
+#
+#  assertTrue    "should set art file" \
+#                "$SET_TAG_CMD 'art=$TEST_ART'"
+#
+#  assertTrue    "should get an art file" \
+#                "[ -f `$GET_TAG_CMD art` ]"
+#
+#  assertEquals  "should have 1 art piece" \
+#                "1" \
+#                "`$GET_TAG_CMD art_pieces`"
+#}
+#
+## test bad inputs
+#test_get_bad_tag() {
+#  assertFalse   "should not be able to find a bad tag" \
+#                "$GET_TAG_CMD abcdefghijk"
+#}
+#
+#test_add_bad_tag() {
+#  assertFalse   "should not set an bad tag" \
+#                "$SET_TAG_CMD 'abcdefg=abcdefg'"
+#}
+
+function oneTimeSetUp() {
+  source $(dirname $0)/../lib/convert.inc
+  source $(dirname $0)/../lib/meta.inc
+  source $(dirname $0)/../lib/system.inc
+  TEST_FLAC="$(dirname $0)/files/without_tags.flac"
+  TEST_ART="$(dirname $0)/files/art_files/art.jpg"
+  GET_TAG_CMD="get_tag_from_flac $TEST_FLAC"
+  SET_TAG_CMD="add_tag_to_flac $TEST_FLAC"
+}
+
+function setUp() {
+  git checkout tests/files/without_tags.flac
+}
+
+function oneTimeTearDown() {
+  git checkout tests/files/without_tags.flac
+  __rmtemp
+}
+
+source $(dirname $0)/shunit/src/shunit2
+# vim: set ft=sh :

@@ -7,20 +7,23 @@ function get_tag_from_flac() {
   fi
 
   case $tag in
+    "artist")
+      tag="ARTIST"
+    ;;
     "album_artist")
-      tag="albumartist"
+      tag="ALBUMARTIST"
     ;;
     "track_number")
-      tag="tracknumber"
+      tag="TRACKNUMBER"
     ;;
     "track_total")
-      tag="tracktotal"
+      tag="TRACKTOTAL"
     ;;
     "disc_number")
-      tag="discnumber"
+      tag="DISCNUMBER"
     ;;
     "disc_total")
-      tag="disctotal"
+      tag="DISCTOTAL"
     ;;
     "art_file")
       image_file="`get_image_from_flac $file`"
@@ -33,7 +36,7 @@ function get_tag_from_flac() {
     ;;
   esac
 
-  data=`metaflac --show-tag=${tag} "$1"`
+  data=`metaflac --show-tag="${tag}" "$file"`
   if [ -z "$data" ]; then
     return 1
   else
@@ -43,6 +46,7 @@ function get_tag_from_flac() {
 }
 
 function add_tag_to_alac() {
+  # TODO: don't split the tag and data
   file=$1
   input=$2
   tag=`echo $input | cut -d= -f1`
@@ -82,9 +86,6 @@ function add_tag_to_alac() {
     "date")
       switch="-y"
     ;;
-    "description")
-      switch="-c"
-    ;;
     "disc_number")
       switch="-d"
     ;;
@@ -110,6 +111,79 @@ function add_tag_to_alac() {
   esac
 
   mp4tags $switch "$data" "$file" &> /tmp/out
+}
+
+function add_tag_to_flac(){
+  file=$1
+  tag=$2
+  value=$3
+
+  # TODO: check better if file is valid
+  if [ ! -s $file ]; then
+    file $file
+    __log_err "$file is not a valid flac file."
+    return 1
+  fi
+
+  if [ $# -ne 3 ]; then
+    __log_err "You must provide a file, tag and value."
+    return 1
+  fi
+
+  case $tag in
+    "artist")
+      name="ARTIST"
+    ;;
+    "album")
+      name="ALBUM"
+    ;;
+    "album_artist")
+      name="ALBUMARTIST"
+    ;;
+    #"art")
+    #  [ -s $data ] || __log_error "Data must contain an image file"
+    #  switch="-P"
+    #;;
+    "comment")
+      for name in DESCRIPTION COMMENT; do
+        metaflac "$file" --remove-tag="$name"
+        metaflac "$file" --set-tag="${name}=${value}"
+      done
+      return 0
+    ;;
+    #"composer")
+    #  switch="-w"
+    #;;
+    "date")
+      name="DATE"
+    ;;
+    #"disc_number")
+    #  switch="-d"
+    #;;
+    #"disc_total")
+    #  switch="-D"
+    #;;
+    "genre")
+      name="GENRE"
+    ;;
+    #"title")
+    #  switch="-s"
+    #;;
+    #"track_number")
+    #  switch="-t"
+    #;;
+    #"track_total")
+    #  switch="-T"
+    #;;
+    *)
+      __log_error "Tag '$tag' not yet supported"
+      return 1
+    ;;
+  esac
+
+  metaflac "$file" --remove-tag="$name"
+  metaflac "$file" --set-tag="${name}=${value}"
+  return 0
 }
 
 function get_tag_from_alac() {
