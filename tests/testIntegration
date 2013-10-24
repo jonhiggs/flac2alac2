@@ -14,7 +14,7 @@ function test_flac1() {
                 "`get_tag_from_alac $ALAC_FILE title`" 
 
   assertFalse   "should not return album_artist" \
-                "get_tag_from_alac $ALAC_FILE album_artist" 
+                "get_tag_from_alac $ALAC_FILE album_artist"
 
 
   assertEquals  "should return album" \
@@ -52,8 +52,8 @@ function test_flac1() {
                 "1" \
                 "`get_tag_from_alac $ALAC_FILE art_pieces`"
 
-  #assertTrue    "should have art file" \
-  #              "[ -s `get_tag_from_alac $ALAC_FILE art` ]"
+  assertTrue    "should have art file" \
+                "[ -s `get_tag_from_alac $ALAC_FILE art` ]"
 
   #assertEquals  "return art_file" \
   #              "JPEG image data, EXIF standard" \

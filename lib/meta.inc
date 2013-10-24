@@ -116,7 +116,14 @@ function add_tag_to_alac() {
     ;;
   esac
 
-  mp4tags $switch "$data" "$file" &> /tmp/out
+  # HACK: work around a bug where setting a picture overrides the album artist.
+  if [ $switch == '-P' ]; then
+    album_artist=`get_tag_from_alac $file album_artist`
+    mp4tags $switch "$data" "$file" &> /tmp/out
+    add_tag_to_alac $file album_artist "$album_artist"
+  else
+    mp4tags $switch "$data" "$file" &> /tmp/out
+  fi
 }
 
 function add_tag_to_flac(){
