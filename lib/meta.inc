@@ -73,6 +73,9 @@ function add_tag_to_alac() {
     "artist")
       switch="-a"
     ;;
+    "comment")
+      switch="-c"
+    ;;
     "composer")
       switch="-w"
     ;;
@@ -126,17 +129,20 @@ function get_tag_from_alac() {
     "album")
       tag=`mp4info "$file" | grep "^\ Album:" | cut -d: -f2- | sed 's/^ //g'`
     ;;
-    "genre")
-      tag=`mp4info "$file" | grep "^\ Genre:" | cut -d: -f2- | sed 's/^ //g'`
+    "comment")
+      tag=`mp4info "$file" | grep "^\ Comments:" | cut -d: -f2- | sed 's/^ //g'`
     ;;
     "date")
-      tag=`mp4info "$file" | grep "^\ Release Date:" | cut -d: -f2- | awk '{ print $1 }'`
+      tag=`mp4info "$file" | grep "^\ Release\ Date:" | cut -d: -f2- | awk '{ print $1 }'`
     ;;
     "disc_number")
       tag=`mp4info "$file" | grep "^\ Disk:" | cut -d: -f2- | awk '{ print $1 }'`
     ;;
     "disc_total")
       tag=`mp4info "$file" | grep "^\ Disk:" | cut -d: -f2- | awk '{ print $3 }'`
+    ;;
+    "genre")
+      tag=`mp4info "$file" | grep "^\ Genre:" | cut -d: -f2- | sed 's/^ //g'`
     ;;
     *)
       __log_err "Tag '$tag' not yet supported"

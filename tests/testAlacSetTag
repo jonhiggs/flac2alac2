@@ -50,6 +50,33 @@ test_add_genre() {
                 "`$GET_TAG_CMD genre`"
 }
 
+test_add_date() {
+  date="2009"
+  assertFalse   "should not have a date" \
+                "$GET_TAG_CMD date"
+
+  assertTrue    "should set an date" \
+                "$SET_TAG_CMD 'date=$date'"
+
+  assertEquals  "should have an date" \
+                "$date" \
+                "`$GET_TAG_CMD date`"
+}
+
+test_add_comment() {
+  comment="this is a comment"
+  assertFalse   "should not have a comment" \
+                "$GET_TAG_CMD comment"
+
+  assertTrue    "should set an comment" \
+                "$SET_TAG_CMD 'comment=$comment'"
+
+  assertEquals  "should have an comment" \
+                "$comment" \
+                "`$GET_TAG_CMD comment`"
+}
+
+# test bad inputs
 
 function oneTimeSetUp() {
   source $(dirname $0)/../lib/convert.inc
