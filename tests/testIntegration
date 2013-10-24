@@ -5,53 +5,55 @@ function test_flac1() {
   assertTrue    "should have an alac file" \
                 "[ -s '$ALAC_FILE' ]"
 
-  assertEquals  "return artist" \
+  assertEquals  "should return artist" \
                 "John Mayer"     \
                 "`get_tag_from_alac $ALAC_FILE artist`" 
 
-  assertEquals  "return title" \
+  assertEquals  "should return title" \
                 "Banter #7"     \
                 "`get_tag_from_alac $ALAC_FILE title`" 
 
-  #assertEquals  "return album_artist" \
-  #              ""     \
-  #              "`get_tag_from_flac $TEST_FLAC1 album_artist`" 
+  assertFalse   "should not return album_artist" \
+                "get_tag_from_alac $ALAC_FILE album_artist" 
 
 
-  #assertEquals  "return album" \
-  #              "2013-04-25, Tuscaloosa Amphitheater, Tuscaloosa, AL"     \
-  #              "`get_tag_from_flac $TEST_FLAC1 album`" 
+  assertEquals  "should return album" \
+                "2013-04-25, Tuscaloosa Amphitheater, Tuscaloosa, AL"     \
+                "`get_tag_from_alac $ALAC_FILE album`" 
 
-  #assertEquals  "return date" \
-  #              "2013"     \
-  #              "`get_tag_from_flac $TEST_FLAC1 date`" 
+  assertEquals  "should return date" \
+                "2013"     \
+                "`get_tag_from_alac $ALAC_FILE date`" 
 
-  #assertFalse   "return genre" \
-  #              "get_tag_from_flac $TEST_FLAC1 genre" 
+  assertFalse   "should not have a genre" \
+                "get_tag_from_flac $ALAC_FILE genre" 
 
-  #assertEquals  "return track_number" \
-  #              "16"     \
-  #              "`get_tag_from_flac $TEST_FLAC1 track_number`" 
+  assertEquals  "should return track_number" \
+                "16"     \
+                "`get_tag_from_alac $ALAC_FILE track_number`" 
 
-  #assertFalse   "return track_total" \
-  #              "get_tag_from_flac $TEST_FLAC1 track_total" 
+  assertFalse   "should not return track_total" \
+                "get_tag_from_alac $ALAC_FILE track_total" 
 
-  #assertFalse   "return disk_number" \
-  #              "get_tag_from_flac $TEST_FLAC1 disk_number" 
+  assertFalse   "should not return disk_number" \
+                "get_tag_from_alac $ALAC_FILE disk_number" 
 
-  #assertFalse   "return disk_total" \
-  #              "get_tag_from_flac $TEST_FLAC1 disk_total" 
+  assertFalse   "should not return disk_total" \
+                "get_tag_from_alac $ALAC_FILE disk_total" 
 
-  #assertEquals  "return description" \
-  #              "has a jpg image"     \
-  #              "`get_tag_from_flac $TEST_FLAC1 description`" 
+  assertEquals  "should return a comment" \
+                "has a jpg image"     \
+                "`get_tag_from_alac $ALAC_FILE comment`" 
 
-  #assertFalse   "return composer" \
-  #              "get_tag_from_flac $TEST_FLAC1 composer" 
+  assertFalse   "should not return composer" \
+                "get_tag_from_alac $ALAC_FILE composer" 
 
-  #art_file=`get_tag_from_flac $TEST_FLAC1 art_file`
-  #assertTrue    "art file is not empty" \
-  #              "[ ! -z $art_file ]"
+  assertEquals  "should have pieces of art" \
+                "1" \
+                "`get_tag_from_alac $ALAC_FILE art_pieces`"
+
+  #assertTrue    "should have art file" \
+  #              "[ -s `get_tag_from_alac $ALAC_FILE art` ]"
 
   #assertEquals  "return art_file" \
   #              "JPEG image data, EXIF standard" \
