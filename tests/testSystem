@@ -56,7 +56,7 @@ function test_rmtemp() {
 
 
 function oneTimeSetUp() {
-  source ../lib/system.inc
+  source $(dirname $0)/../lib/system.inc
   PATH="{HOME}/opt/mp4v2/bin:$PATH"
   ORG_PATH=$PATH
 }
@@ -65,5 +65,5 @@ function tearDown() {
   PATH=$ORG_PATH
 }
 
-source ./shunit/src/shunit2
+source $(dirname $0)/shunit/src/shunit2
 

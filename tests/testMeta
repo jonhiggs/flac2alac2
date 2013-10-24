@@ -93,12 +93,12 @@ function test_get_image_from_flac() {
 }
 
 function oneTimeSetUp() {
-  source ../lib/convert.inc
-  source ../lib/meta.inc
-  source ../lib/system.inc
-  TEST_FLAC1="./files/flac1.flac"
-  TEST_FLAC2="./files/flac2.flac"
-  TEST_FLAC3="./files/flac3.flac"
+  source $(dirname $0)/../lib/convert.inc
+  source $(dirname $0)/../lib/meta.inc
+  source $(dirname $0)/../lib/system.inc
+  TEST_FLAC1="$(dirname $0)/files/flac1.flac"
+  TEST_FLAC2="$(dirname $0)/files/flac2.flac"
+  TEST_FLAC3="$(dirname $0)/files/flac3.flac"
   TEST_ALAC1=`flac_to_alac $TEST_FLAC1`
 }
 
@@ -106,4 +106,4 @@ function oneTimeTearDown() {
   __rmtemp
 }
 
-source ./shunit/src/shunit2
+source $(dirname $0)/shunit/src/shunit2

@@ -63,14 +63,14 @@ function test_conversion_stats() {
 }
 
 function oneTimeSetUp() {
-  source ../lib/convert.inc
-  source ../lib/system.inc
-  TEST_FLAC1="./files/flac1.flac"
+  source $(dirname $0)/../lib/convert.inc
+  source $(dirname $0)/../lib/system.inc
+  TEST_FLAC1="$(dirname $0)/files/flac1.flac"
 }
 
 function tearDown() {
   __rmtemp
 }
 
-source ../lib/system.inc
-source ./shunit/src/shunit2
+source $(dirname $0)/../lib/system.inc
+source $(dirname $0)/shunit/src/shunit2

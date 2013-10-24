@@ -11,3 +11,8 @@ install-homebrew:
 	echo "You need to install mp4v2 version 2.0.0 or later."
 	echo "Homebrew currently doesn't have a recipe for doing this."
 	echo "Take a look at https://code.google.com/p/mp4v2/downloads/list"
+
+test:
+	./tests/testSystem
+	./tests/testConvert
+	./tests/testMeta
