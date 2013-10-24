@@ -1,0 +1,73 @@
+test_add_artist() {
+  artist="i am an artist"
+  assertFalse   "should not have an artist" \
+                "$GET_TAG_CMD artist"
+
+  assertTrue    "should set an artist" \
+                "$SET_TAG_CMD 'artist=$artist'"
+
+  assertEquals  "should have an artist" \
+                "$artist" \
+                "`$GET_TAG_CMD artist`"
+}
+
+test_add_album_artist() {
+  album_artist="i am an album artist"
+  assertFalse   "should not have an album artist" \
+                "$GET_TAG_CMD album_artist"
+
+  assertTrue    "should set an album artist" \
+                "$SET_TAG_CMD 'album_artist=$album_artist'"
+
+  assertEquals  "should have an album artist" \
+                "$album_artist" \
+                "`$GET_TAG_CMD album_artist`"
+}
+
+test_add_album() {
+  album="i am an album"
+  assertFalse   "should not have an album" \
+                "$GET_TAG_CMD album"
+
+  assertTrue    "should set an album" \
+                "$SET_TAG_CMD 'album=$album'"
+
+  assertEquals  "should have an album" \
+                "$album" \
+                "`$GET_TAG_CMD album`"
+}
+
+test_add_genre() {
+  genre="i am a blues man"
+  assertFalse   "should not have a genre" \
+                "$GET_TAG_CMD genre"
+
+  assertTrue    "should set an genre" \
+                "$SET_TAG_CMD 'genre=$genre'"
+
+  assertEquals  "should have an genre" \
+                "$genre" \
+                "`$GET_TAG_CMD genre`"
+}
+
+
+function oneTimeSetUp() {
+  source $(dirname $0)/../lib/convert.inc
+  source $(dirname $0)/../lib/meta.inc
+  source $(dirname $0)/../lib/system.inc
+  TEST_ALAC="$(dirname $0)/files/without_tags.m4a"
+  GET_TAG_CMD="get_tag_from_alac $TEST_ALAC"
+  SET_TAG_CMD="add_tag_to_alac $TEST_ALAC"
+}
+
+function setUp() {
+  git checkout tests/files/without_tags.m4a
+}
+
+function oneTimeTearDown() {
+  git checkout tests/files/without_tags.m4a
+  __rmtemp
+}
+
+source $(dirname $0)/shunit/src/shunit2
+# vim: set ft=sh :

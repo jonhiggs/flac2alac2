@@ -118,21 +118,33 @@ function get_tag_from_alac() {
 
   case $tag in
     "artist")
-      mp4info "$file" | grep "^\ Artist:" | cut -d: -f2- | sed 's/^ //g'
+      tag=`mp4info "$file" | grep "^\ Artist:" | cut -d: -f2- | sed 's/^ //g'`
+    ;;
+    "album_artist")
+      tag=`mp4info "$file" | grep "^\ Album\ Artist:" | cut -d: -f2- | sed 's/^ //g'`
+    ;;
+    "album")
+      tag=`mp4info "$file" | grep "^\ Album:" | cut -d: -f2- | sed 's/^ //g'`
+    ;;
+    "genre")
+      tag=`mp4info "$file" | grep "^\ Genre:" | cut -d: -f2- | sed 's/^ //g'`
     ;;
     "date")
-      mp4info "$file" | grep "^\ Release Date:" | cut -d: -f2- | awk '{ print $1 }'
+      tag=`mp4info "$file" | grep "^\ Release Date:" | cut -d: -f2- | awk '{ print $1 }'`
     ;;
     "disc_number")
-      mp4info "$file" | grep "^\ Disk:" | cut -d: -f2- | awk '{ print $1 }'
+      tag=`mp4info "$file" | grep "^\ Disk:" | cut -d: -f2- | awk '{ print $1 }'`
     ;;
     "disc_total")
-      mp4info "$file" | grep "^\ Disk:" | cut -d: -f2- | awk '{ print $3 }'
+      tag=`mp4info "$file" | grep "^\ Disk:" | cut -d: -f2- | awk '{ print $3 }'`
     ;;
     *)
       __log_err "Tag '$tag' not yet supported"
     ;;
   esac
+
+  if [ -z "$tag" ]; then return 1; fi
+  echo $tag
 }
 
 function get_image_from_flac() {
