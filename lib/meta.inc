@@ -8,9 +8,15 @@ function get_tag_from_flac() {
 
   case $tag in
     "art")
-      image_file="`get_image_from_flac $file`"
-      if [ ! -z "$image_file" ]; then return 1; fi
-      echo $image_file
+      if [ `get_tag_from_flac $file art_pieces` -ne 0 ]; then
+        image_file="`get_image_from_flac $file`"
+        if [ ! -z "$image_file" ]; then
+          __log_err "there is an art piece, but it couldn't be extracted."
+          return 1
+        fi
+
+        echo $image_file
+      fi
       return 0
     ;;
     "art_pieces")
