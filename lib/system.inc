@@ -65,3 +65,5 @@ function __has_imagemagick() {
     return 1
   fi
 }
+
+# vim: set ft=sh :

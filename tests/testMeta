@@ -107,3 +107,4 @@ function oneTimeTearDown() {
 }
 
 source $(dirname $0)/shunit/src/shunit2
+# vim: set ft=sh :

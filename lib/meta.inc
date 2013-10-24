@@ -175,3 +175,5 @@ function get_image_from_flac() {
   #else
   #  return 0
   #fi
+
+# vim: set ft=sh :
