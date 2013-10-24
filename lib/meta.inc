@@ -284,6 +284,9 @@ function get_image_from_flac() {
     ;;
   esac
 
+  if [ ! -s ${tmp_img}.jpg ]; then
+    __log_err "Extracted image '${tmp_img}.jpg' is empty."
+  fi
   echo "${tmp_img}.jpg"
   return 0
 }
