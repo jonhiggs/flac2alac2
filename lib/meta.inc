@@ -7,6 +7,16 @@ function get_tag_from_flac() {
   fi
 
   case $tag in
+    "art")
+      image_file="`get_image_from_flac $file`"
+      if [ ! -z "$image_file" ]; then return 1; fi
+      echo $image_file
+      return 0
+    ;;
+    "art_pieces")
+      metaflac --list "$file" | egrep -c "\s+type:\ \d\ \(PICTURE\)"
+      return 0
+    ;;
     "artist")
       tag="ARTIST"
     ;;
@@ -24,15 +34,6 @@ function get_tag_from_flac() {
     ;;
     "disc_total")
       tag="DISCTOTAL"
-    ;;
-    "art_file")
-      image_file="`get_image_from_flac $file`"
-      if [ ! -z "$image_file" ]; then
-        echo $image_file
-        return 0
-      else
-        return 1
-      fi
     ;;
   esac
 
@@ -140,10 +141,10 @@ function add_tag_to_flac(){
     "album_artist")
       name="ALBUMARTIST"
     ;;
-    #"art")
-    #  [ -s $data ] || __log_error "Data must contain an image file"
-    #  switch="-P"
-    #;;
+    "art")
+      metaflac "$file" --import-picture-from="3||||$value" &> /tmp/out
+      return $?
+    ;;
     "comment")
       for name in DESCRIPTION COMMENT; do
         metaflac "$file" --remove-tag="$name"
