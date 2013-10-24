@@ -9,179 +9,60 @@
 # inspiration from http://ca.ubuntuforums.org/member.php?u=6176 (MetalMusicAddict)
 # script at http://ca.ubuntuforums.org/showthread.php?t=889700&page=2
 
-SED=`which gsed || which sed`
-
-function __mp4v2_version() {
-  mp4tags --version 2>&1 | egrep -o "[0-9\.]+$"
-}
-
-function __mp4v2_check_version() {
-  if [ `__mp4v2_version | cut -d. -f1` -lt 2 ]; then
-    echo "You must run at least mp4v2 version 2.0.0"
-    echo "You have version `__mp4v2_version`"
+function usage() {
+  if [ $# -lt 1 ]; then
+    echo "usage: $0 [-d] <file.flac> [file2.flac] [...]" > /dev/stderr
     exit 1
   fi
 }
 
-function __mktemp() {
-  file=$(mktemp -t flac2alac)
-  rm $file
-  echo $file
-}
-
-function __rmtemp() {
-  [ -z $TMPDIR ] && TMPDIR="/tmp"
-  find $TMPDIR -name flac2alac.\* -delete
-}
-
-function __die() {
-  echo "ERROR: $1" > /dev/stderr
-  __rmtemp
-  rm -f "${ARTFILE}"
-  exit 1
-}
-
-function __move_on() {
-  echo "INFO: $1" > /dev/stderr
-  __rmtemp
-  rm -f "${ARTFILE}"
-}
-
-function __convert_flac2alac {
-	OUTFILE="`basename \"$1\" .flac`.m4a"
-	DIR="`dirname \"$1\"`"
-  TMP_MP4="`__mktemp`"
-
-  if [ -f $OUTFILE ]; then
-    echo "INFO: Skipping '$1' because it's already converted."
-    return 0
-  fi
+source `dirname $0`/../lib/convert
+echo `dirname $0`/../lib/convert
+exit 1
 
 
-	if [ $? -ne 0 ]; then
-    __rmtemp
-		echo "ERROR: corrupt or invalid flac file, exiting." > /dev/stderr
-		exit 1
-	fi
-
-	ARTIST="`metaflac --show-tag=ARTIST \"$1\" | $SED s/ARTIST=//ig`"
-	ALBUMARTIST="`metaflac --show-tag=ALBUMARTIST \"$1\" | $SED s/ALBUMARTIST=//ig`"
-	TITLE="`metaflac --show-tag=TITLE \"$1\" | $SED s/TITLE=//ig`"
-	ALBUM="`metaflac --show-tag=ALBUM \"$1\" | $SED s/ALBUM=//ig`"
-	DATE="`metaflac --show-tag=DATE \"$1\" | $SED s/DATE=//ig`"
-	GENRE="`metaflac --show-tag=GENRE \"$1\" | $SED s/GENRE=//ig`"
-	TRACKNUMBER="`metaflac --show-tag=TRACKNUMBER \"$1\" | $SED s/TRACKNUMBER=//ig`"
-	TRACKTOTAL="`metaflac --show-tag=TRACKTOTAL \"$1\" | $SED s/TRACKTOTAL=//ig`"
-	DISCNUMBER="`metaflac --show-tag=DISCNUMBER \"$1\" | $SED s/DISCNUMBER=//ig`"
-	DISCTOTAL="`metaflac --show-tag=DISCTOTAL \"$1\" | $SED s/DISCTOTAL=//ig`"
-	DESCRIPTION="`metaflac --show-tag=DESCRIPTION \"$1\" | $SED s/DESCRIPTION=//ig`"
-	COMPOSER="`metaflac --show-tag=COMPOSER \"$1\" | $SED s/COMPOSER=//ig`"
-
-  if which afconvert > /dev/null; then
-    TMP_WAV="`__mktemp`"
-    flac -d -o "${TMP_WAV}" "$1"
-    afconvert -d alac "${TMP_WAV}" "${TMP_MP4}"
-  else
-    ffmpeg -v -1 -i "$1" -acodec alac "${TMP_MP4}"
-  fi
-
-	if [ $? -ne 0 ]; then
-		echo "Problem running conversion, exiting." > /dev/stderr
-    __rmtemp
-		rm -f "${ARTFILE}"
-		exit 1
-	fi
-
-  __generate_picture_for_m4a
-	[ ! -z "$ALBUM" ] && mp4tags -A "$ALBUM" "${TMP_MP4}"
-	[ ! -z "$ALBUMARTIST" ] && mp4tags -R "$ALBUMARTIST" "${TMP_MP4}"
-	[ ! -z "$ARTIST" ] && mp4tags -a "$ARTIST" "${TMP_MP4}"
-	[ ! -z "$ART_FILE" ] && __mp4v2_check_version && mp4tags -P "$ART_FILE" "${TMP_MP4}"
-	[ ! -z "$COMPOSER" ] && mp4tags -w "$COMPOSER" "${TMP_MP4}"
-	[ ! -z "$DATE" ] && mp4tags -y "$DATE"  "${TMP_MP4}"
-	[ ! -z "$DESCRIPTION" ] && mp4tags -c "$DESCRIPTION" "${TMP_MP4}"
-	[ ! -z "$DISCNUMBER" ] && mp4tags -d "$DISCNUMBER" "${TMP_MP4}"
-	[ ! -z "$DISCTOTAL" ] && mp4tags -D "$DISCTOTAL" "${TMP_MP4}"
-	[ ! -z "$GENRE" ] && mp4tags -g "$GENRE" "${TMP_MP4}"
-	[ ! -z "$TITLE" ] && mp4tags -s "$TITLE" "${TMP_MP4}"
-	[ ! -z "$TRACKNUMBER" ] && mp4tags -t "$TRACKNUMBER" "${TMP_MP4}"
-	[ ! -z "$TRACKTOTAL" ] && mp4tags -T "$TRACKTOTAL" "${TMP_MP4}"
-
-  # set to blank string if album artist doesn't exist otherwise it gets the art
-  # file for some reason.
-  [ -z "$ALBUMARTIST" ] && mp4tags -R "" "${TMP_MP4}"
-
-  # XXX: doesn't look like this will ever fail.
-	if [ $? -ne 0 ]; then
-    __rmtemp
-		echo "ERROR: unable to decode new ALAC, exiting." > /dev/stderr
-		exit 1
-	fi
-
-  mv "${TMP_MP4}" "${DIR}/${OUTFILE}"
-  OLDSIZE=`stat -f "%z" "$1"`
-  NEWSIZE=`stat -f "%z" "${DIR}/${OUTFILE}"`
-  PCT=$(( $OLDSIZE * 100 / $NEWSIZE ))
-  echo "Successfully converted:"
-  echo "$1 -> ${DIR}/$OUTFILE"
-  echo "STATS: ALAC is ${PCT}% the size of the input FLAC"
-  if [ $DELETE_WHEN_DONE -gt 0 ]; then
-    rm -v "$1"
-  fi
-
-}
-
-function __test_flac() {
-  if ! flac --test $1 &> /dev/null; then
-    echo "ERROR: Input file '$1' is corrupt." > /dev/stderr
-    return 1
-  fi
-  return 0
-}
-
-if [ $# -lt 1 ]; then
-	echo "usage: $0 [-d] <file.flac> [file2.flac] [...]" > /dev/stderr
-	exit 1
-fi
-
-function __generate_picture_for_m4a() {
-	FLAC_FILE="`basename \"$OUT_FILE\" .m4a`.flac"
-	DIR="`dirname \"$FLAC_FILE\"`"
-  ART_FILE="${DIR}/.folder.png"
-
-  # grab image from flac if it exists.
-  flac_picture="`mktemp -tflacpicture`.png"
-  metaflac --export-picture-to="$flac_picture" "$FLAC_FILE" &> /dev/null
-  if [ $? -eq 0 ]; then
-    echo "Extracted picture from flac."
-    convert $flac_picture $ART_FILE
-  fi
-
-  rm -f $flac_picture
-
-  # then overwrite it with the folder image because that should take
-  # precidence.
-  for f in folder.jpg folder.jpeg; do
-    [ -f $f ] && convert $f $ART_FILE
-  done
-
-  for f in folder.png; do
-    [ -f $f ] && cp $f $ART_FILE
-  done
-
-  if [ ! -f $ART_FILE ]; then
-    unset $ART_FILE
-  else
-    return 0
-  fi
-}
-
-DELETE_WHEN_DONE=0
+DELETE_WHEN_DONE="false"
 
 for filename in "$@"; do
-	[ "$filename" == "-d" ] && DELETE_WHEN_DONE=1
-	if [ -f "$filename" ]; then
-    __test_flac "$filename" && __convert_flac2alac "$filename"
+	[ "$filename" == "-d" ] && DELETE_WHEN_DONE="true"
+
+	if flac_valid "$filename"; then
+    album=`get_tag_from_flac $filename album`
+    album_artist=`get_tag_from_flac $filename album_artist`
+    art_file=`get_tag_from_flac $filename art_file`
+    artist=`get_tag_from_flac $filename artist`
+    composer=`get_tag_from_flac $filename composer`
+    date=`get_tag_from_flac $filename date`
+    description=`get_tag_from_flac $filename description`
+    disc_number=`get_tag_from_flac $filename disc_number`
+    disc_total=`get_tag_from_flac $filename disc_total`
+    genre=`get_tag_from_flac $filename genre`
+    title=`get_tag_from_flac $filename title`
+    track_number=`get_tag_from_flac $filename track_number`
+    track_total=`get_tag_from_flac $filename track_total`
+    # get the art file from the flac file
+
+    alac_file=`flac2alac "$filename"`
+
+    add_art_to_alac "$alac_file" "album=$album"
+    add_art_to_alac "$alac_file" "album_artist=$album_artist"
+    add_art_to_alac "$alac_file" "art_file=$art_file"
+    add_art_to_alac "$alac_file" "artist=$artist"
+    add_art_to_alac "$alac_file" "composer=$composer"
+    add_art_to_alac "$alac_file" "date=$date"
+    add_art_to_alac "$alac_file" "description=$description"
+    add_art_to_alac "$alac_file" "disc_number=$disc_number"
+    add_art_to_alac "$alac_file" "disc_total=$disc_total"
+    add_art_to_alac "$alac_file" "genre=$genre"
+    add_art_to_alac "$alac_file" "title=$title"
+    add_art_to_alac "$alac_file" "track_number=$track_number"
+    add_art_to_alac "$alac_file" "track_total=$track_total"
+    # add the art to the alac file
+
+    mv $alac_file $filename.m4a
+    rename 's/flac.m4a/m4a' $filename
+    
+    $DELETE_WHEN_DONE && rm $filename
   fi
 done
 
