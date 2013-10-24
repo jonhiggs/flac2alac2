@@ -75,6 +75,20 @@ test_add_title() {
                 "$title" \
                 "`$GET_TAG_CMD title`"
 }
+
+test_add_track_number() {
+  track_number="3"
+  assertFalse   "should not have a track_number" \
+                "$GET_TAG_CMD track_number"
+
+  assertTrue    "should set an track_number" \
+                "$SET_TAG_CMD track_number '$track_number'"
+
+  assertEquals  "should have an track_number" \
+                "$track_number" \
+                "`$GET_TAG_CMD track_number`"
+}
+
 test_add_comment() {
   comment="this is a comment"
   assertFalse   "should not have a comment" \
