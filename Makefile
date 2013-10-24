@@ -12,7 +12,7 @@ install-homebrew:
 	echo "Homebrew currently doesn't have a recipe for doing this."
 	echo "Take a look at https://code.google.com/p/mp4v2/downloads/list"
 
-test: test_system test_convert test_alac_set_tag test_meta 
+test: test_system test_convert test_alac_set_tag test_meta test_integration
 
 test_system:
 	./tests/testSystem
@@ -20,11 +20,12 @@ test_system:
 test_convert:
 	./tests/testConvert
 
-test_meta:
-	./tests/testMeta
-
 test_alac_set_tag:
 	./tests/testAlacSetTag
 
 test_flac_set_tag:
 	./tests/testFlacSetTag
+
+test_integration:
+	./tests/testIntegration
+

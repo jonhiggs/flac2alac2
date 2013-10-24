@@ -30,15 +30,15 @@ for filename in "$@"; do
     alac_file=`flac_to_alac "$filename"`
 
     # create variables containing the tag values
-    for tag in album album_artist art_file artist composer date description   \
-               disc_number disc_total genre title track_number track_total; do
-      tag_value="`get_tag_from_flac $filename $tag`"
+    #for tag in album album_artist art_file artist composer date description   \
+    #           disc_number disc_total genre title track_number track_total; do
+    #  tag_value="`get_tag_from_flac $filename $tag`"
 
-      if [ ! -z "$tag_value" ]; then
-        declare ${tag}="${tag_value}"
-        add_tag_to_alac "$alac_file" "${tag}=${tag_value}"
-      fi
-    done
+    #  if [ ! -z "$tag_value" ]; then
+    #    declare ${tag}="${tag_value}"
+    #    add_tag_to_alac "$alac_file" "${tag}=${tag_value}"
+    #  fi
+    #done
 
 
     ## add the art to the alac file
