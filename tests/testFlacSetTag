@@ -63,6 +63,19 @@ test_add_date() {
                 "`$GET_TAG_CMD date`"
 }
 
+test_add_title() {
+  title="im a title"
+  assertFalse   "should not have a title" \
+                "$GET_TAG_CMD title"
+
+  assertTrue    "should set an title" \
+                "$SET_TAG_CMD title '$title'"
+
+  assertEquals  "should have an title" \
+                "$title" \
+                "`$GET_TAG_CMD title`"
+}
+
 test_add_comment() {
   comment="this is a comment"
   assertFalse   "should not have a comment" \

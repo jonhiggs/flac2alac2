@@ -166,9 +166,9 @@ function add_tag_to_flac(){
     "genre")
       name="GENRE"
     ;;
-    #"title")
-    #  switch="-s"
-    #;;
+    "title")
+      name="TITLE"
+    ;;
     #"track_number")
     #  switch="-t"
     #;;
@@ -227,6 +227,9 @@ function get_tag_from_alac() {
     ;;
     "genre")
       tag=`mp4info "$file" | grep "^\ Genre:" | cut -d: -f2- | sed 's/^ //g'`
+    ;;
+    "title")
+      tag=`mp4info "$file" | grep "^\ Name:" | cut -d: -f2- | sed 's/^ //g'`
     ;;
     *)
       __log_err "Tag '$tag' not yet supported"
