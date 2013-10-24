@@ -16,10 +16,9 @@ function usage() {
   fi
 }
 
-source `dirname $0`/../lib/convert
-echo `dirname $0`/../lib/convert
-exit 1
-
+source `dirname $0`/../lib/system.inc
+source `dirname $0`/../lib/convert.inc
+source `dirname $0`/../lib/meta.inc
 
 DELETE_WHEN_DONE="false"
 
@@ -27,42 +26,27 @@ for filename in "$@"; do
 	[ "$filename" == "-d" ] && DELETE_WHEN_DONE="true"
 
 	if flac_valid "$filename"; then
-    album=`get_tag_from_flac $filename album`
-    album_artist=`get_tag_from_flac $filename album_artist`
-    art_file=`get_tag_from_flac $filename art_file`
-    artist=`get_tag_from_flac $filename artist`
-    composer=`get_tag_from_flac $filename composer`
-    date=`get_tag_from_flac $filename date`
-    description=`get_tag_from_flac $filename description`
-    disc_number=`get_tag_from_flac $filename disc_number`
-    disc_total=`get_tag_from_flac $filename disc_total`
-    genre=`get_tag_from_flac $filename genre`
-    title=`get_tag_from_flac $filename title`
-    track_number=`get_tag_from_flac $filename track_number`
-    track_total=`get_tag_from_flac $filename track_total`
-    # get the art file from the flac file
 
-    alac_file=`flac2alac "$filename"`
+    alac_file=`flac_to_alac "$filename"`
 
-    add_art_to_alac "$alac_file" "album=$album"
-    add_art_to_alac "$alac_file" "album_artist=$album_artist"
-    add_art_to_alac "$alac_file" "art_file=$art_file"
-    add_art_to_alac "$alac_file" "artist=$artist"
-    add_art_to_alac "$alac_file" "composer=$composer"
-    add_art_to_alac "$alac_file" "date=$date"
-    add_art_to_alac "$alac_file" "description=$description"
-    add_art_to_alac "$alac_file" "disc_number=$disc_number"
-    add_art_to_alac "$alac_file" "disc_total=$disc_total"
-    add_art_to_alac "$alac_file" "genre=$genre"
-    add_art_to_alac "$alac_file" "title=$title"
-    add_art_to_alac "$alac_file" "track_number=$track_number"
-    add_art_to_alac "$alac_file" "track_total=$track_total"
-    # add the art to the alac file
+    # create variables containing the tag values
+    for tag in album album_artist art_file artist composer date description   \
+               disc_number disc_total genre title track_number track_total; do
+      tag_value="`get_tag_from_flac $filename $tag`"
 
-    mv $alac_file $filename.m4a
-    rename 's/flac.m4a/m4a' $filename
+      if [ ! -z "$tag_value" ]; then
+        declare ${tag}="${tag_value}"
+        add_tag_to_alac "$alac_file" "${tag}=${tag_value}"
+      fi
+    done
+
+
+    ## add the art to the alac file
+
+    mv $alac_file ${filename}.m4a
+    rename 's/flac.m4a/m4a/' ${filename}.m4a
     
-    $DELETE_WHEN_DONE && rm $filename
+    #$DELETE_WHEN_DONE && rm $filename
   fi
 done
 
