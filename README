@@ -3,7 +3,7 @@ First posted on http://nighto.net/convertendo-flac-para-alac/
 
 Licensed on GPLv3
 also modified by Jeffrey Paul <sneak@datavibe.net>
-and by jon higgs <jhiggs@eml.cc>
+Then rewritten by Jon Higgs <jhiggs@eml.cc>
 
 flac2alac is a shell script to convert FLAC (Free Lossless Audio Codec) files
 to ALAC (Apple Lossless Audio Codec) format, used on iPod/iPhone/iPad.
