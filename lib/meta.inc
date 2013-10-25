@@ -239,6 +239,9 @@ function get_tag_from_alac() {
     "comment")
       tag=`mp4info "$file" | grep "^\ Comments:" | cut -d: -f2- | sed 's/^ //g'`
     ;;
+    "composer")
+      tag=`mp4info "$file" | grep "^\ Composer:" | cut -d: -f2- | sed 's/^ //g'`
+    ;;
     "date")
       tag=`mp4info "$file" | grep "^\ Release\ Date:" | cut -d: -f2- | awk '{ print $1 }'`
     ;;

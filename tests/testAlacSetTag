@@ -50,6 +50,17 @@ test_add_comment() {
                 "`$GET_TAG_CMD comment`"
 }
 
+test_add_composer() {
+  composer="i am a composer"
+  assertFalse   "should not have a composer" \
+                "$GET_TAG_CMD composer"
+
+  assertTrue    "should set a composer" \
+                "$SET_TAG_CMD composer '$composer'"
+
+  assertEquals  "should have a composer" \
+                "$composer" \
+                "`$GET_TAG_CMD composer`"
 }
 
 test_add_genre() {
