@@ -45,6 +45,10 @@ function test_flac1() {
                 "Tapers: Debbie Ocoboc / Don Browning"     \
                 "`get_tag_from_alac $ALAC_FILE comment`" 
 
+  assertEquals  "should return a description" \
+                "Tapers: Debbie Ocoboc / Don Browning"     \
+                "`get_tag_from_alac $ALAC_FILE comment`" 
+
   assertFalse   "should not return composer" \
                 "get_tag_from_alac $ALAC_FILE composer" 
 

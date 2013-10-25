@@ -28,17 +28,20 @@ function get_tag_from_flac() {
     "album_artist")
       tag="ALBUMARTIST"
     ;;
-    "track_number")
-      tag="TRACKNUMBER"
-    ;;
-    "track_total")
-      tag="TRACKTOTAL"
+    "comment")
+      tag="Description"
     ;;
     "disc_number")
       tag="DISCNUMBER"
     ;;
     "disc_total")
       tag="DISCTOTAL"
+    ;;
+    "track_number")
+      tag="TRACKNUMBER"
+    ;;
+    "track_total")
+      tag="TRACKTOTAL"
     ;;
   esac
 
@@ -84,12 +87,16 @@ function add_tag_to_alac() {
     ;;
     "comment")
       switch="-c"
+      add_tag_to_alac "$file" "description" "$data"
     ;;
     "composer")
       switch="-w"
     ;;
     "date")
       switch="-y"
+    ;;
+    "description")
+      switch="-m"
     ;;
     "disc_number")
       switch="-d"
@@ -230,8 +237,8 @@ function get_tag_from_alac() {
     "album")
       tag=`mp4info "$file" | grep "^\ Album:" | cut -d: -f2- | sed 's/^ //g'`
     ;;
-    "comment")
-      tag=`mp4info "$file" | grep "^\ Comments:" | cut -d: -f2- | sed 's/^ //g'`
+    "comment"|"description")
+      tag=`mp4info "$file" | grep "^\ Short Description:" | cut -d: -f2- | sed 's/^ //g'`
     ;;
     "date")
       tag=`mp4info "$file" | grep "^\ Release\ Date:" | cut -d: -f2- | awk '{ print $1 }'`
