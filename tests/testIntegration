@@ -56,16 +56,17 @@ function test_flac1() {
                 "1" \
                 "`get_tag_from_alac $ALAC_FILE art_pieces`"
 
+  art_file=`get_tag_from_alac $ALAC_FILE art`
   assertTrue    "should have art file" \
-                "[ -s `get_tag_from_alac $ALAC_FILE art` ]"
+                "[ -s "$art_file" ]"
 
-  #assertEquals  "return art_file" \
-  #              "JPEG image data, EXIF standard" \
-  #              "`file -b $art_file`"
+  assertEquals  "return art_file" \
+                "JPEG image data, EXIF standard" \
+                "`file -b $art_file`"
 
-  #assertEquals  "artfile has correct md5 sum" \
-  #              "ba738cea1bf5753e9fc48a08088258b4" \
-  #              "`cat ${art_file} | md5`"
+  assertEquals  "artfile has correct md5 sum" \
+                "ba738cea1bf5753e9fc48a08088258b4" \
+                "`cat ${art_file} | md5`"
 
   assertTrue    "should delete the alac file" \
                 "rm '$ALAC_FILE'"
