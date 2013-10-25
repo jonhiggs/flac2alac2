@@ -1,14 +1,14 @@
-test_add_artist() {
-  artist="i am an artist"
-  assertFalse   "should not have an artist" \
-                "$GET_TAG_CMD artist"
+test_add_album() {
+  album="i am an album"
+  assertFalse   "should not have an album" \
+                "$GET_TAG_CMD album"
 
-  assertTrue    "should set an artist" \
-                "$SET_TAG_CMD artist '$artist'"
+  assertTrue    "should set an album" \
+                "$SET_TAG_CMD album '$album'"
 
-  assertEquals  "should have an artist" \
-                "$artist" \
-                "`$GET_TAG_CMD artist`"
+  assertEquals  "should have an album" \
+                "$album" \
+                "`$GET_TAG_CMD album`"
 }
 
 test_add_album_artist() {
@@ -24,17 +24,32 @@ test_add_album_artist() {
                 "`$GET_TAG_CMD album_artist`"
 }
 
-test_add_album() {
-  album="i am an album"
-  assertFalse   "should not have an album" \
-                "$GET_TAG_CMD album"
+test_add_artist() {
+  artist="i am an artist"
+  assertFalse   "should not have an artist" \
+                "$GET_TAG_CMD artist"
 
-  assertTrue    "should set an album" \
-                "$SET_TAG_CMD album '$album'"
+  assertTrue    "should set an artist" \
+                "$SET_TAG_CMD artist '$artist'"
 
-  assertEquals  "should have an album" \
-                "$album" \
-                "`$GET_TAG_CMD album`"
+  assertEquals  "should have an artist" \
+                "$artist" \
+                "`$GET_TAG_CMD artist`"
+}
+
+test_add_comment() {
+  comment="this is a comment"
+  assertFalse   "should not have a comment" \
+                "$GET_TAG_CMD comment"
+
+  assertTrue    "should set a comment" \
+                "$SET_TAG_CMD comment '$comment'"
+
+  assertEquals  "should have a comment" \
+                "$comment" \
+                "`$GET_TAG_CMD comment`"
+}
+
 }
 
 test_add_genre() {
@@ -87,23 +102,6 @@ test_add_track_number() {
   assertEquals  "should have an track_number" \
                 "$track_number" \
                 "`$GET_TAG_CMD track_number`"
-}
-
-test_add_comment() {
-  comment="this is a comment"
-  assertFalse   "should not have a comment" \
-                "$GET_TAG_CMD comment"
-
-  assertTrue    "should set an comment" \
-                "$SET_TAG_CMD comment '$comment'"
-
-  assertEquals  "should have an comment" \
-                "$comment" \
-                "`$GET_TAG_CMD comment`"
-
-  assertEquals  "should have a description" \
-                "$comment" \
-                "`$GET_TAG_CMD description`"
 }
 
 test_add_art() {
