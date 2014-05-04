@@ -42,7 +42,7 @@ function test_flac1() {
                 "get_tag_from_alac $ALAC_FILE disk_total" 
 
   assertEquals  "should return a comment" \
-                "has a jpg image"     \
+                "Tapers: Debbie Ocoboc / Don Browning"     \
                 "`get_tag_from_alac $ALAC_FILE comment`" 
 
   assertFalse   "should not return composer" \
