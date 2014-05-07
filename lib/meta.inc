@@ -2,14 +2,14 @@ function get_tag_from_flac() {
   file=$1
   tag=$2
 
-  if [ ! -s $file ]; then
+  if [ ! -s "$file" ]; then
     __log_err "You must provide a valid flac file"
   fi
 
   case $tag in
     "art")
-      if [ `get_tag_from_flac $file art_pieces` -ne 0 ]; then
-        image_file="`get_image_from_flac $file`"
+      if [ `get_tag_from_flac "$file" art_pieces` -ne 0 ]; then
+        image_file="`get_image_from_flac "$file"`"
         if [ -z "$image_file" ]; then
           __log_err "there is an art piece, but it couldn't be extracted."
           return 1
@@ -57,8 +57,8 @@ function add_tag_to_alac() {
   tag=$2
   data=$3
 
-  if [ ! -s $file ]; then
-    file $file
+  if [ ! -s "$file" ]; then
+    file "$file"
     __log_err "$file is not a valid alac file."
     return 1
   fi
@@ -117,9 +117,9 @@ function add_tag_to_alac() {
 
   # HACK: work around a bug where setting a picture overrides the album artist.
   if [ $switch == '-P' ]; then
-    album_artist=`get_tag_from_alac $file album_artist`
+    album_artist=`get_tag_from_alac "$file" album_artist`
     mp4tags $switch "$data" "$file" &> /tmp/out
-    add_tag_to_alac $file album_artist "$album_artist"
+    add_tag_to_alac "$file" album_artist "$album_artist"
   else
     mp4tags $switch "$data" "$file" &> /tmp/out
   fi
@@ -131,8 +131,8 @@ function add_tag_to_flac(){
   value=$3
 
   # TODO: check better if file is valid
-  if [ ! -s $file ]; then
-    file $file
+  if [ ! -s "$file" ]; then
+    file "$file"
     __log_err "$file is not a valid flac file."
     return 1
   fi
@@ -202,7 +202,7 @@ function get_tag_from_alac() {
   file=$1
   tag=$2
 
-  if [ ! -s $file ]; then
+  if [ ! -s "$file" ]; then
     __log_err "You must provide a valid alac file."
   fi
 
@@ -213,7 +213,7 @@ function get_tag_from_alac() {
 
   case $tag in
     "art")
-      if [ `get_tag_from_alac $file art_pieces` -ne 0 ]; then
+      if [ `get_tag_from_alac "$file" art_pieces` -ne 0 ]; then
         tag=`get_image_from_alac "$file"`
       fi   
     ;;
@@ -265,7 +265,7 @@ function get_image_from_flac() {
   file=$1
   tmp_img="`__mktemp`"
 
-  if [ ! -s $file ]; then
+  if [ ! -s "$file" ]; then
     __log_err "You must provide a valid flac file"
   fi
 

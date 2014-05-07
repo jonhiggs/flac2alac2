@@ -4,7 +4,7 @@ function flac_valid() {
     return 1
   fi
 
-  if ! flac --test $1 &> /dev/null; then
+  if ! flac --test "$1" &> /dev/null; then
     __log_err "Input file '$1' is corrupt."
     return 1
   fi
@@ -32,7 +32,7 @@ function wav_to_alac() {
     return 1
   fi
 
-  if [ ! -f $1 ]; then
+  if [ ! -f "$1" ]; then
     __log_err "Input file does not exist."
     return 1
   fi
@@ -53,7 +53,7 @@ function flac_to_alac() {
     return 1
   fi
 
-  if [ ! -f $1 ]; then
+  if [ ! -f "$1" ]; then
     __log_err "Input file does not exist."
     return 1
   fi
@@ -61,7 +61,7 @@ function flac_to_alac() {
   tmp_alac="`__mktemp`.m4a"
   ffmpeg -v -1 -i "$1" -acodec alac "${tmp_alac}"
 
-  if [ -s ${tmp_alac} ]; then
+  if [ -s "${tmp_alac}" ]; then
     echo ${tmp_alac}
     return 0
   else
