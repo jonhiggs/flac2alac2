@@ -9,12 +9,19 @@
 # inspiration from http://ca.ubuntuforums.org/member.php?u=6176 (MetalMusicAddict)
 # script at http://ca.ubuntuforums.org/showthread.php?t=889700&page=2
 
+
 function usage() {
   if [ $# -lt 1 ]; then
-    echo "usage: $0 [-d] <file.flac> [file2.flac] [...]" > /dev/stderr
+    echo "Usage: $0 [-d] <file.flac> [file2.flac] [...]" > /dev/stderr
+    echo
+    echo "Options:"
+    echo "  -d    delete files once done."
     exit 1
   fi
 }
+
+[[ $# -eq 0 ]] && usage
+[[ $1 == "--help" ]] && usage
 
 source `dirname $0`/../lib/system.inc
 source `dirname $0`/../lib/convert.inc
@@ -44,7 +51,7 @@ for filename in "$@"; do
 
     mv $alac_file "${filename/\.flac}.m4a"
     #rename 's/flac.m4a/m4a/' ${filename}.m4a
-    
+
     #$DELETE_WHEN_DONE && rm $filename
   fi
 done
