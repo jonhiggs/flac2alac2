@@ -22,27 +22,13 @@ function get_tag_from_flac() {
       metaflac --list "$file" | egrep -c "\s+type:\ \d\ \(PICTURE\)"
       return 0
     ;;
-    "artist")
-      tag="ARTIST"
-    ;;
-    "album_artist")
-      tag="ALBUMARTIST"
-    ;;
-    "comment")
-      tag="COMMENT"
-    ;;
-    "disc_number")
-      tag="DISCNUMBER"
-    ;;
-    "disc_total")
-      tag="DISCTOTAL"
-    ;;
-    "track_number")
-      tag="TRACKNUMBER"
-    ;;
-    "track_total")
-      tag="TRACKTOTAL"
-    ;;
+    "artist")       tag="ARTIST" ;;
+    "album_artist") tag="ALBUMARTIST" ;;
+    "comment")      tag="COMMENT" ;;
+    "disc_number")  tag="DISCNUMBER" ;;
+    "disc_total")   tag="DISCTOTAL" ;;
+    "track_number") tag="TRACKNUMBER" ;;
+    "track_total")  tag="TRACKTOTAL" ;;
   esac
 
   data=`metaflac --show-tag="${tag}" "$file"`
@@ -72,49 +58,23 @@ function add_tag_to_alac() {
   fi
 
   case $tag in
-    "album")
-      switch="-A"
-    ;;
-    "album_artist")
-      switch="-R"
-    ;;
     "art")
       [ -s $data ] || __log_error "Data must contain an image file"
       switch="-P"
     ;;
-    "artist")
-      switch="-a"
-    ;;
-    "comment")
-      switch="-c"
-    ;;
-    "composer")
-      switch="-w"
-    ;;
-    "date")
-      switch="-y"
-    ;;
-    "description")
-      switch="-m"
-    ;;
-    "disc_number")
-      switch="-d"
-    ;;
-    "disc_total")
-      switch="-D"
-    ;;
-    "genre")
-      switch="-g"
-    ;;
-    "title")
-      switch="-s"
-    ;;
-    "track_number")
-      switch="-t"
-    ;;
-    "track_total")
-      switch="-T"
-    ;;
+    "album")        switch="-A" ;;
+    "album_artist") switch="-R" ;;
+    "artist")       switch="-a" ;;
+    "comment")      switch="-c" ;;
+    "composer")     switch="-w" ;;
+    "date")         switch="-y" ;;
+    "description")  switch="-m" ;;
+    "disc_number")  switch="-d" ;;
+    "disc_total")   switch="-D" ;;
+    "genre")        switch="-g" ;;
+    "title")        switch="-s" ;;
+    "track_number") switch="-t" ;;
+    "track_total")  switch="-T" ;;
     *)
       __log_error "Tag '$tag' not yet supported"
       return 1
@@ -149,15 +109,6 @@ function add_tag_to_flac(){
   fi
 
   case $tag in
-    "artist")
-      name="ARTIST"
-    ;;
-    "album")
-      name="ALBUM"
-    ;;
-    "album_artist")
-      name="ALBUMARTIST"
-    ;;
     "art")
       metaflac "$file" --import-picture-from="3||||$value" &> /tmp/out
       return $?
@@ -169,30 +120,17 @@ function add_tag_to_flac(){
       done
       return 0
     ;;
-    #"composer")
-    #  switch="-w"
-    #;;
-    "date")
-      name="DATE"
-    ;;
-    #"disc_number")
-    #  switch="-d"
-    #;;
-    #"disc_total")
-    #  switch="-D"
-    #;;
-    "genre")
-      name="GENRE"
-    ;;
-    "title")
-      name="TITLE"
-    ;;
-    "track_number")
-      name="TRACKNUMBER"
-    ;;
-    #"track_total")
-    #  switch="-T"
-    #;;
+    "artist")       name="ARTIST" ;;
+    "album")        name="ALBUM" ;;
+    "album_artist") name="ALBUMARTIST" ;;
+    #"composer")    switch="-w" #;;
+    "date")         name="DATE" ;;
+    #"disc_number") switch="-d" #;;
+    #"disc_total")  switch="-D" #;;
+    "genre")        name="GENRE" ;;
+    "title")        name="TITLE" ;;
+    "track_number") name="TRACKNUMBER" ;;
+    #"track_total") switch="-T" #;;
     *)
       __log_error "Tag '$name' not yet supported"
       return 1
@@ -221,7 +159,7 @@ function get_tag_from_alac() {
     "art")
       if [ `get_tag_from_alac "$file" art_pieces` -ne 0 ]; then
         tag=`get_image_from_alac "$file"`
-      fi   
+      fi
     ;;
     "art_pieces")
       tag=`mp4info "$file" | grep "^\ Cover\ Art\ pieces:" | cut -d: -f2`
