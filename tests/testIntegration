@@ -7,11 +7,11 @@ function test_flac1() {
 
   assertEquals  "should return artist" \
                 "John Mayer"     \
-                "`get_tag_from_alac $ALAC_FILE artist`" 
+                "`get_tag_from_alac $ALAC_FILE artist`"
 
   assertEquals  "should return title" \
                 "Banter #7"     \
-                "`get_tag_from_alac $ALAC_FILE title`" 
+                "`get_tag_from_alac $ALAC_FILE title`"
 
   assertFalse   "should not return album_artist" \
                 "get_tag_from_alac $ALAC_FILE album_artist"
@@ -19,34 +19,34 @@ function test_flac1() {
 
   assertEquals  "should return album" \
                 "2013-04-25, Tuscaloosa Amphitheater, Tuscaloosa, AL"     \
-                "`get_tag_from_alac $ALAC_FILE album`" 
+                "`get_tag_from_alac $ALAC_FILE album`"
 
   assertEquals  "should return date" \
                 "2013"     \
-                "`get_tag_from_alac $ALAC_FILE date`" 
+                "`get_tag_from_alac $ALAC_FILE date`"
 
   assertFalse   "should not have a genre" \
-                "get_tag_from_flac $ALAC_FILE genre" 
+                "get_tag_from_flac $ALAC_FILE genre"
 
   assertEquals  "should return track_number" \
                 "16"     \
-                "`get_tag_from_alac $ALAC_FILE track_number`" 
+                "`get_tag_from_alac $ALAC_FILE track_number`"
 
   assertFalse   "should not return track_total" \
-                "get_tag_from_alac $ALAC_FILE track_total" 
+                "get_tag_from_alac $ALAC_FILE track_total"
 
   assertFalse   "should not return disk_number" \
-                "get_tag_from_alac $ALAC_FILE disk_number" 
+                "get_tag_from_alac $ALAC_FILE disk_number"
 
   assertFalse   "should not return disk_total" \
-                "get_tag_from_alac $ALAC_FILE disk_total" 
+                "get_tag_from_alac $ALAC_FILE disk_total"
 
   assertEquals  "should return a comment" \
                 "Tapers: Debbie Ocoboc / Don Browning"     \
-                "`get_tag_from_alac $ALAC_FILE comment`" 
+                "`get_tag_from_alac $ALAC_FILE comment`"
 
   assertFalse   "should not return composer" \
-                "get_tag_from_alac $ALAC_FILE composer" 
+                "get_tag_from_alac $ALAC_FILE composer"
 
   assertEquals  "should have pieces of art" \
                 "1" \
