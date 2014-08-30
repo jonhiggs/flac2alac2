@@ -24,7 +24,7 @@ function get_tag_from_flac() {
     ;;
     "artist")       tag="ARTIST" ;;
     "album_artist") tag="ALBUMARTIST" ;;
-    "comment")      tag="COMMENT" ;;
+    "comment")      tag="DESCRIPTION" ;;
     "disc_number")  tag="DISCNUMBER" ;;
     "disc_total")   tag="DISCTOTAL" ;;
     "track_number") tag="TRACKNUMBER" ;;
