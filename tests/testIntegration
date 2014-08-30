@@ -62,7 +62,7 @@ function test_flac1() {
 
   assertEquals  "artfile has correct md5 sum" \
                 "ba738cea1bf5753e9fc48a08088258b4" \
-                "`cat ${art_file} | md5`"
+                "`cat ${art_file} | /sbin/md5`"
 
   assertTrue    "should delete the alac file" \
                 "rm '$ALAC_FILE'"
