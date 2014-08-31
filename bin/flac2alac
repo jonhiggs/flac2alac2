@@ -48,6 +48,8 @@ ARGV.each do |arg|
     DELETE_WHEN_DONE = true
   when "--dry-run"
     DRY_RUN = true
+  when "--help"
+    usage
   else
     PATHS.push arg
   end
