@@ -35,8 +35,8 @@ end
 
 def files
   FILES.flatten.map do |f|
-    Shellwords.escape(f) if File.exist?(f)
-  end.join(" ")
+    Shellwords.escape(f)
+  end
 end
 
 usage if ARGV.empty?
@@ -63,7 +63,7 @@ PATHS.each do |path|
   FILES.push(path) if File.file?(path)
 
   if File.directory?(path)
-    FILES.push(`find #{path} -iname \*.flac`.split("\n"))
+    FILES.push(`find #{Shellwords.escape path} -iname \*.flac`.split("\n"))
   end
 end
 
@@ -72,6 +72,8 @@ if DRY_RUN
   exit 1
 end
 
-`#{File.dirname(__FILE__)}/../lib/flac2alac "#{switches}" #{files}`
+files.each do |f|
+  puts `#{File.dirname(__FILE__)}/../lib/flac2alac "#{switches}" #{f}`
+end
 
 exit 0

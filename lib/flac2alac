@@ -13,10 +13,7 @@
 function usage() {
   if [ $# -lt 1 ]; then
     # TODO: to stderr
-    echo "Usage: $0 [-d] <file.flac> [file2.flac] [...]" > /dev/stderr
-    echo
-    echo "Options:"
-    echo "  -d    delete files once done."
+    echo "Usage: $0 [-d] <file.flac>" > /dev/stderr
     exit 1
   fi
 }
@@ -33,35 +30,33 @@ for argument in "$@"; do
   case $argument in
     "-d")     DELETE_WHEN_DONE="true"       ;;
     "--help") usage                         ;;
-    *)
-      next_element=${#f[@]}
-      FILES[$next_element]="$argument"
-    ;;
   esac
+
+  filename=${argument}
 done
 
-for filename in "${FILES}"; do
-	if flac_valid "$filename"; then
-    alac_file=`flac_to_alac "$filename"`
+echo "processing '${filename}'" > /dev/stdout
 
-    # create variables containing the tag values
-    for tag in album album_artist art artist comment composer date \
-               disc_number disc_total genre title track_number track_total; do
-      tag_value="`get_tag_from_flac "$filename" $tag`"
+if flac_valid "$filename"; then
+  alac_file=`flac_to_alac "$filename"`
 
-      if [ ! -z "$tag_value" ]; then
-        declare ${tag}="${tag_value}"
-        add_tag_to_alac "$alac_file" ${tag} "${tag_value}"
-      fi
-    done
+  # create variables containing the tag values
+  for tag in album album_artist art artist comment composer date \
+             disc_number disc_total genre title track_number track_total; do
+    tag_value="`get_tag_from_flac "$filename" $tag`"
 
-    ## add the art to the alac file
+    if [ ! -z "$tag_value" ]; then
+      declare ${tag}="${tag_value}"
+      add_tag_to_alac "$alac_file" ${tag} "${tag_value}"
+    fi
+  done
 
-    mv $alac_file "${filename/\.flac}.m4a"
+  ## add the art to the alac file
 
-    ${DELETE_WHEN_DONE} && rm $filename
-  fi
-done
+  mv $alac_file "${filename/\.flac}.m4a"
+
+  ${DELETE_WHEN_DONE} && rm $filename
+fi
 
 __rmtemp
 exit 0
