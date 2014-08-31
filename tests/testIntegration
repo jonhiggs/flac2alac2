@@ -1,5 +1,5 @@
 function test_flac1() {
-  $(dirname $0)/../bin/flac2alac $TEST_FLAC1
+  $(dirname $0)/../bin/flac2alac "$TEST_FLAC1"
   ALAC_FILE="$(dirname $TEST_FLAC1)/flac1.m4a"
 
   assertTrue    "should have an alac file" \
@@ -67,15 +67,34 @@ function test_flac1() {
   assertTrue    "should delete the alac file" \
                 "rm '$ALAC_FILE'"
 
+  assertTrue    "should have a flac file" \
+                "[ -s '${TEST_FLAC1}' ]"
 }
+
+function test_delete_flag() {
+  $(dirname $0)/../bin/flac2alac -d $TEST_FLAC1_COPY
+  ALAC_FILE="${TEST_FLAC1_COPY/\.flac}.m4a"
+
+  assertTrue    "should have an alac file" \
+                "[ -s '${ALAC_FILE}' ]"
+
+  assertFalse   "should not have a flac file" \
+                "[ -s '${TEST_FLAC1_COPY}' ]"
+
+}
+
+#function test_awkward_input_file() {
+#}
 
 function oneTimeSetUp() {
   source $(dirname $0)/../lib/convert.inc
   source $(dirname $0)/../lib/meta.inc
   source $(dirname $0)/../lib/system.inc
   TEST_FLAC1="$(dirname $0)/files/flac1.flac"
+  TEST_FLAC1_COPY="$(dirname $0)/files/flac1_copy.flac"
   TEST_FLAC2="$(dirname $0)/files/flac2.flac"
   TEST_FLAC3="$(dirname $0)/files/flac3.flac"
+  cp ${TEST_FLAC1} ${TEST_FLAC1_COPY}
 }
 
 function oneTimeTearDown() {

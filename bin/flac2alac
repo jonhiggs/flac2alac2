@@ -12,6 +12,7 @@
 
 function usage() {
   if [ $# -lt 1 ]; then
+    # TODO: to stderr
     echo "Usage: $0 [-d] <file.flac> [file2.flac] [...]" > /dev/stderr
     echo
     echo "Options:"
@@ -20,18 +21,23 @@ function usage() {
   fi
 }
 
-[[ $# -eq 0 ]] && usage
-[[ $1 == "--help" ]] && usage
-
 source `dirname $0`/../lib/system.inc
 source `dirname $0`/../lib/convert.inc
 source `dirname $0`/../lib/meta.inc
 
 DELETE_WHEN_DONE="false"
+FILES=""
 
-for filename in "$@"; do
-	[ "$filename" == "-d" ] && DELETE_WHEN_DONE="true"
+[[ $# -eq 0 ]] && usage
+for argument in $@; do
+  case $argument in
+    "-d")     DELETE_WHEN_DONE="true"       ;;
+    "--help") usage                         ;;
+    *)        FILES="$argument ${FILES}"    ;;
+  esac
+done
 
+for filename in ${FILES}; do
 	if flac_valid "$filename"; then
     alac_file=`flac_to_alac "$filename"`
 
@@ -46,12 +52,11 @@ for filename in "$@"; do
       fi
     done
 
-
     ## add the art to the alac file
 
     mv $alac_file "${filename/\.flac}.m4a"
 
-    #$DELETE_WHEN_DONE && rm $filename
+    ${DELETE_WHEN_DONE} && rm $filename
   fi
 done
 
