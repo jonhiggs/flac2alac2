@@ -67,6 +67,11 @@ PATHS.each do |path|
   end
 end
 
+if files.empty?
+  warn "no files found to convert."
+  exit 1
+end
+
 if DRY_RUN
   puts files
   exit 1
