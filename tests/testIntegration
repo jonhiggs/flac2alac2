@@ -83,8 +83,18 @@ function test_delete_flag() {
 
 }
 
-#function test_awkward_input_file() {
-#}
+function test_awkward_input_file() {
+  $(dirname $0)/../bin/flac2alac "${TEST_FLAC_AWKWARD}"
+  ALAC_FILE="${TEST_FLAC_AWKWARD/\.flac}.m4a"
+
+  assertTrue    "should have an alac file" \
+                "[ -s '${ALAC_FILE}' ]"
+
+  assertEquals  "should return artist" \
+                "John Mayer"     \
+                "`get_tag_from_alac "${ALAC_FILE}" artist`"
+
+}
 
 function oneTimeSetUp() {
   source $(dirname $0)/../lib/convert.inc
@@ -94,6 +104,7 @@ function oneTimeSetUp() {
   TEST_FLAC1_COPY="$(dirname $0)/files/flac1_copy.flac"
   TEST_FLAC2="$(dirname $0)/files/flac2.flac"
   TEST_FLAC3="$(dirname $0)/files/flac3.flac"
+  TEST_FLAC_AWKWARD="$(dirname $0)/files/--awkward file.flac"
   cp ${TEST_FLAC1} ${TEST_FLAC1_COPY}
 }
 

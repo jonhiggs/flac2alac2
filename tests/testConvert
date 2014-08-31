@@ -2,6 +2,9 @@ function test_flac_valid() {
   assertTrue  "should return true with a valid flac file" \
               "flac_valid $TEST_FLAC1"
 
+  assertTrue  "should return true with a awkward flac file" \
+              "flac_valid '$TEST_FLAC_AWKWARD'"
+
   assertFalse "should return false when not a flac file" \
               "flac_valid ./files/README"
 }
@@ -66,6 +69,7 @@ function oneTimeSetUp() {
   source $(dirname $0)/../lib/convert.inc
   source $(dirname $0)/../lib/system.inc
   TEST_FLAC1="$(dirname $0)/files/flac1.flac"
+  TEST_FLAC_AWKWARD="$(dirname $0)/files/--awkward file.flac"
 }
 
 function tearDown() {

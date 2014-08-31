@@ -26,18 +26,21 @@ source `dirname $0`/../lib/convert.inc
 source `dirname $0`/../lib/meta.inc
 
 DELETE_WHEN_DONE="false"
-FILES=""
+FILES=()
 
 [[ $# -eq 0 ]] && usage
-for argument in $@; do
+for argument in "$@"; do
   case $argument in
     "-d")     DELETE_WHEN_DONE="true"       ;;
     "--help") usage                         ;;
-    *)        FILES="$argument ${FILES}"    ;;
+    *)
+      next_element=${#f[@]}
+      FILES[$next_element]="$argument"
+    ;;
   esac
 done
 
-for filename in ${FILES}; do
+for filename in "${FILES}"; do
 	if flac_valid "$filename"; then
     alac_file=`flac_to_alac "$filename"`
 

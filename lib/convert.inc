@@ -4,7 +4,7 @@ function flac_valid() {
     return 1
   fi
 
-  if [[ ! -e $1 ]]; then
+  if [[ ! -e "$1" ]]; then
     __log_err "Input file '$1' does not exist."
     return 1
   fi
