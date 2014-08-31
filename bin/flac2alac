@@ -34,9 +34,7 @@ def switches
 end
 
 def files
-  FILES.flatten.map do |f|
-    Shellwords.escape(f)
-  end
+  FILES.flatten.map { |f| Shellwords.escape(f) }
 end
 
 usage if ARGV.empty?
