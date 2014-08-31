@@ -1,0 +1,67 @@
+#!/bin/bash
+
+# flac2alac By Arlindo \"Nighto\" Pereira <nighto@nighto.net>
+# (C) 2010,2013. Licensed on GPLv3"
+
+# modified by jeffrey paul <sneak@datavibe.net>
+# further modified by jon higgs <jhiggs@eml.cc>
+
+# inspiration from http://ca.ubuntuforums.org/member.php?u=6176 (MetalMusicAddict)
+# script at http://ca.ubuntuforums.org/showthread.php?t=889700&page=2
+
+
+function usage() {
+  if [ $# -lt 1 ]; then
+    # TODO: to stderr
+    echo "Usage: $0 [-d] <file.flac> [file2.flac] [...]" > /dev/stderr
+    echo
+    echo "Options:"
+    echo "  -d    delete files once done."
+    exit 1
+  fi
+}
+
+source `dirname $0`/../lib/system.inc
+source `dirname $0`/../lib/convert.inc
+source `dirname $0`/../lib/meta.inc
+
+DELETE_WHEN_DONE="false"
+FILES=()
+
+[[ $# -eq 0 ]] && usage
+for argument in "$@"; do
+  case $argument in
+    "-d")     DELETE_WHEN_DONE="true"       ;;
+    "--help") usage                         ;;
+    *)
+      next_element=${#f[@]}
+      FILES[$next_element]="$argument"
+    ;;
+  esac
+done
+
+for filename in "${FILES}"; do
+	if flac_valid "$filename"; then
+    alac_file=`flac_to_alac "$filename"`
+
+    # create variables containing the tag values
+    for tag in album album_artist art artist comment composer date \
+               disc_number disc_total genre title track_number track_total; do
+      tag_value="`get_tag_from_flac "$filename" $tag`"
+
+      if [ ! -z "$tag_value" ]; then
+        declare ${tag}="${tag_value}"
+        add_tag_to_alac "$alac_file" ${tag} "${tag_value}"
+      fi
+    done
+
+    ## add the art to the alac file
+
+    mv $alac_file "${filename/\.flac}.m4a"
+
+    ${DELETE_WHEN_DONE} && rm $filename
+  fi
+done
+
+__rmtemp
+exit 0

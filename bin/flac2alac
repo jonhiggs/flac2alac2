@@ -1,67 +1,77 @@
-#!/bin/bash
+#!/usr/bin/env ruby
+require 'shellwords'
+require 'debugger'
 
-# flac2alac By Arlindo \"Nighto\" Pereira <nighto@nighto.net>
-# (C) 2010,2013. Licensed on GPLv3"
+def usage
+  puts <<-EOF.gsub(/^../, "")
+    Convert FLAC files to Apple Lossless files to be imported into iTunes.
 
-# modified by jeffrey paul <sneak@datavibe.net>
-# further modified by jon higgs <jhiggs@eml.cc>
+    USAGE:
+      $0 [OPTIONS] <file.flac> [file2.flac] [...]
 
-# inspiration from http://ca.ubuntuforums.org/member.php?u=6176 (MetalMusicAddict)
-# script at http://ca.ubuntuforums.org/showthread.php?t=889700&page=2
+    EXAMPLES:
+      Convert File:
+        $0 <file.flac>
 
+      Convert file and delete original FLAC.
+        $0 -d <file.flac>
 
-function usage() {
-  if [ $# -lt 1 ]; then
-    # TODO: to stderr
-    echo "Usage: $0 [-d] <file.flac> [file2.flac] [...]" > /dev/stderr
-    echo
-    echo "Options:"
-    echo "  -d    delete files once done."
-    exit 1
-  fi
-}
+      Convert Directory:
+        $0 <dir_containing_flacs>
 
-source `dirname $0`/../lib/system.inc
-source `dirname $0`/../lib/convert.inc
-source `dirname $0`/../lib/meta.inc
+    OPTIONS:
+      --delete    delete files once done.
+      --dry-run   don't create or delete any files.
+  EOF
 
-DELETE_WHEN_DONE="false"
-FILES=()
+  exit 1
+end
 
-[[ $# -eq 0 ]] && usage
-for argument in "$@"; do
-  case $argument in
-    "-d")     DELETE_WHEN_DONE="true"       ;;
-    "--help") usage                         ;;
-    *)
-      next_element=${#f[@]}
-      FILES[$next_element]="$argument"
-    ;;
-  esac
-done
+def switches
+  s = []
+  s.push("-d") if DELETE_WHEN_DONE
+  s.join(" ")
+end
 
-for filename in "${FILES}"; do
-	if flac_valid "$filename"; then
-    alac_file=`flac_to_alac "$filename"`
+def files
+  FILES.flatten.map do |f|
+    Shellwords.escape(f) if File.exist?(f)
+  end.join(" ")
+end
 
-    # create variables containing the tag values
-    for tag in album album_artist art artist comment composer date \
-               disc_number disc_total genre title track_number track_total; do
-      tag_value="`get_tag_from_flac "$filename" $tag`"
+usage if ARGV.empty?
 
-      if [ ! -z "$tag_value" ]; then
-        declare ${tag}="${tag_value}"
-        add_tag_to_alac "$alac_file" ${tag} "${tag_value}"
-      fi
-    done
+PATHS = []
+FILES = []
 
-    ## add the art to the alac file
+ARGV.each do |arg|
+  case arg
+  when "--delete"
+    DELETE_WHEN_DONE = true
+  when "--dry-run"
+    DRY_RUN = true
+  else
+    PATHS.push arg
+  end
+end
 
-    mv $alac_file "${filename/\.flac}.m4a"
+DELETE_WHEN_DONE = false if !defined?(DELETE_WHEN_DONE)
+DRY_RUN = false if !defined?(DRY_RUN)
 
-    ${DELETE_WHEN_DONE} && rm $filename
-  fi
-done
+PATHS.each do |path|
+  next unless File.exist?(path)
+  FILES.push(path) if File.file?(path)
 
-__rmtemp
+  if File.directory?(path)
+    FILES.push(`find #{path} -iname \*.flac`.split("\n"))
+  end
+end
+
+if DRY_RUN
+  puts files
+  exit 1
+end
+
+`#{File.dirname(__FILE__)}/../lib/flac2alac "#{switches}" #{files}`
+
 exit 0

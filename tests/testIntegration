@@ -72,7 +72,7 @@ function test_flac1() {
 }
 
 function test_delete_flag() {
-  $(dirname $0)/../bin/flac2alac -d $TEST_FLAC1_COPY
+  $(dirname $0)/../bin/flac2alac --delete $TEST_FLAC1_COPY
   ALAC_FILE="${TEST_FLAC1_COPY/\.flac}.m4a"
 
   assertTrue    "should have an alac file" \
@@ -93,7 +93,12 @@ function test_awkward_input_file() {
   assertEquals  "should return artist" \
                 "John Mayer"     \
                 "`get_tag_from_alac "${ALAC_FILE}" artist`"
+}
 
+function test_directory() {
+  assertEquals "should find some files" \
+               "8" \
+               "$($(dirname $0)/../bin/flac2alac --dry-run $(dirname $0) | wc -w | awk '{ print $1 }')"
 }
 
 function oneTimeSetUp() {
